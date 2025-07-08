@@ -31,20 +31,28 @@ export function ProjectDetailDialog({ project, open, onOpenChange }: ProjectDeta
     if (open && project?.detailFile) {
       setLoading(true)
       setError(null)
+      setContent("")
+
+      console.log("Fetching project details for:", project.detailFile)
 
       fetch(`/${project.detailFile}`)
         .then((response) => {
+          console.log("Response status:", response.status)
           if (!response.ok) {
-            throw new Error("Failed to fetch project details")
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`)
           }
           return response.text()
         })
         .then((markdown) => {
-          setContent(parseMarkdown(markdown))
+          console.log("Fetched markdown length:", markdown.length)
+          console.log("Markdown preview:", markdown.substring(0, 100))
+          const parsedContent = parseMarkdown(markdown)
+          console.log("Parsed content length:", parsedContent.length)
+          setContent(parsedContent)
         })
         .catch((err) => {
           console.error("Error fetching project details:", err)
-          setError("プロジェクト詳細の読み込みに失敗しました。")
+          setError(`プロジェクト詳細の読み込みに失敗しました: ${err.message}`)
         })
         .finally(() => {
           setLoading(false)
@@ -92,12 +100,25 @@ export function ProjectDetailDialog({ project, open, onOpenChange }: ProjectDeta
             {loading && (
               <div className="flex items-center justify-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-white"></div>
+                <p className="ml-3 text-gray-600 dark:text-gray-300">読み込み中...</p>
               </div>
             )}
 
-            {error && <div className="text-red-600 dark:text-red-400 text-center py-8">{error}</div>}
+            {error && (
+              <div className="text-red-600 dark:text-red-400 text-center py-8 bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
+                {error}
+              </div>
+            )}
 
-            {!loading && !error && content && <div dangerouslySetInnerHTML={{ __html: content }} />}
+            {!loading && !error && content && (
+              <div className="markdown-content" dangerouslySetInnerHTML={{ __html: content }} />
+            )}
+
+            {!loading && !error && !content && (
+              <div className="text-gray-500 dark:text-gray-400 text-center py-8">
+                コンテンツが見つかりませんでした。
+              </div>
+            )}
           </div>
         </div>
       </DialogContent>
