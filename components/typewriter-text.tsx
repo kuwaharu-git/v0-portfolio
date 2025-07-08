@@ -8,7 +8,7 @@ interface TypewriterTextProps {
   speed?: number
 }
 
-export function TypewriterText({ text, delay = 0, speed = 150 }: TypewriterTextProps) {
+export function TypewriterText({ text, delay = 0, speed = 80 }: TypewriterTextProps) {
   const [displayText, setDisplayText] = useState("")
   const [currentIndex, setCurrentIndex] = useState(0)
   const [showCursor, setShowCursor] = useState(true)
@@ -29,7 +29,7 @@ export function TypewriterText({ text, delay = 0, speed = 150 }: TypewriterTextP
   useEffect(() => {
     const cursorTimer = setInterval(() => {
       setShowCursor((prev) => !prev)
-    }, 600)
+    }, 500)
     return () => clearInterval(cursorTimer)
   }, [])
 
