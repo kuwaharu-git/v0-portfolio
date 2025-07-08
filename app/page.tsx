@@ -30,7 +30,6 @@ import { Progress } from "@/components/ui/progress"
 import { getPortfolioData, type SkillsData, type Project, type CareerItem } from "@/lib/data"
 import { ProjectDetailDialog } from "@/components/project-detail-dialog"
 import { AnimatedBackground } from "@/components/animated-background"
-import { TypewriterText } from "@/components/typewriter-text"
 import { FloatingElements } from "@/components/floating-elements"
 import { ScrollIndicator } from "@/components/scroll-indicator"
 
@@ -297,17 +296,17 @@ export default function Portfolio() {
               className="text-5xl md:text-7xl font-bold text-gray-900 dark:text-white mb-4"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.1 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <TypewriterText text="kuwaharu" speed={60} />
+              kuwaharu
             </motion.h1>
             <motion.p
               className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.2 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
             >
-              <TypewriterText text="Backend & Security Enthusiast" delay={800} speed={60} />
+              Backend & Security Enthusiast
             </motion.p>
             <motion.div
               className="flex justify-center space-x-6"

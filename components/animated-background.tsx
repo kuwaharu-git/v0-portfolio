@@ -25,13 +25,13 @@ export function AnimatedBackground() {
           ],
         }}
         transition={{
-          duration: 10,
+          duration: 20,
           repeat: Number.POSITIVE_INFINITY,
           ease: "easeInOut",
         }}
       />
 
-      {/* Animated Orbs */}
+      {/* Animated Orbs - Much slower */}
       <motion.div
         className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl"
         animate={{
@@ -40,7 +40,7 @@ export function AnimatedBackground() {
           scale: [1, 1.2, 1],
         }}
         transition={{
-          duration: 20,
+          duration: 40,
           repeat: Number.POSITIVE_INFINITY,
           ease: "easeInOut",
         }}
@@ -54,10 +54,10 @@ export function AnimatedBackground() {
           scale: [1, 0.8, 1],
         }}
         transition={{
-          duration: 15,
+          duration: 35,
           repeat: Number.POSITIVE_INFINITY,
           ease: "easeInOut",
-          delay: 2,
+          delay: 5,
         }}
       />
 
@@ -69,10 +69,10 @@ export function AnimatedBackground() {
           scale: [1, 1.3, 1],
         }}
         transition={{
-          duration: 18,
+          duration: 45,
           repeat: Number.POSITIVE_INFINITY,
           ease: "easeInOut",
-          delay: 4,
+          delay: 10,
         }}
       />
 
