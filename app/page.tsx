@@ -171,7 +171,7 @@ export default function Portfolio() {
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+      <section className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center">
           <div className="mb-8">
             <h1 className="text-5xl md:text-7xl font-bold text-gray-900 dark:text-white mb-4">kuwaharu</h1>
