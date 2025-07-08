@@ -375,19 +375,16 @@ export default function Portfolio() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {skillsData.certifications.map((cert, index) => (
                     <Card key={index} className="hover:shadow-lg transition-shadow">
-                      <CardContent className="p-6">
-                        <div className="flex items-center mb-4">
-                          <IconComponent
-                            iconName={cert.icon}
-                            className="w-8 h-8 mr-3 text-purple-600 dark:text-purple-400"
-                          />
-                          <div className="flex-1">
-                            <h4 className="font-medium text-gray-900 dark:text-white">{cert.name}</h4>
-                            <span className="text-sm font-medium text-green-600 dark:text-green-400">Certified</span>
-                          </div>
-                          <span className="text-sm font-bold text-green-600 dark:text-green-400">✓</span>
+                      <CardContent className="p-6 flex items-center">
+                        <IconComponent
+                          iconName={cert.icon}
+                          className="w-8 h-8 mr-4 text-purple-600 dark:text-purple-400"
+                        />
+                        <div className="flex-1">
+                          <h4 className="font-medium text-gray-900 dark:text-white">{cert.name}</h4>
+                          <span className="text-sm font-medium text-green-600 dark:text-green-400">Certified</span>
                         </div>
-                        <Progress value={100} className="h-2" />
+                        <span className="text-2xl text-green-600 dark:text-green-400">✓</span>
                       </CardContent>
                     </Card>
                   ))}

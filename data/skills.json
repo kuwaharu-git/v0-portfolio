@@ -22,7 +22,7 @@
     { "name": "Linux", "icon": "Code", "level": 85 }
   ],
   "certifications": [
-    { "name": "Applied Information Technology Engineer (AP)", "icon": "Award", "level": 100 },
-    { "name": "Registered Information Security Specialist (SC)", "icon": "Shield", "level": 100 }
+    { "name": "Applied Information Technology Engineer (AP)", "icon": "Award" },
+    { "name": "Registered Information Security Specialist (SC)", "icon": "Shield" }
   ]
 }

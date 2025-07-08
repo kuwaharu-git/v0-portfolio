@@ -9,11 +9,16 @@ export interface Skill {
   level: number
 }
 
+export interface Certification {
+  name: string
+  icon: string
+}
+
 export interface SkillsData {
   languages: Skill[]
   frameworks: Skill[]
   tools: Skill[]
-  certifications: Skill[]
+  certifications: Certification[]
 }
 
 export interface Project {
