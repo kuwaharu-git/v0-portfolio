@@ -21,8 +21,8 @@ const getRandomPosition = () => ({
 export function FloatingElements() {
   return (
     <div className="fixed inset-0 pointer-events-none -z-10">
-      {/* 15個のアイコンを配置 */}
-      {[...Array(15)].map((_, index) => {
+      {/* 10個のアイコンを配置 */}
+      {[...Array(10)].map((_, index) => {
         const Icon = icons[index % icons.length]
         const size = getRandomSize()
         const position = getRandomPosition()
@@ -54,7 +54,7 @@ export function FloatingElements() {
       })}
 
       {/* さらに小さなアイコンを追加（より薄く） */}
-      {[...Array(10)].map((_, index) => {
+      {[...Array(7)].map((_, index) => {
         const Icon = icons[(index + 5) % icons.length]
         const size = Math.random() * 8 + 8 // 8-16pxのランダムサイズ
         const position = getRandomPosition()
@@ -86,7 +86,7 @@ export function FloatingElements() {
       })}
 
       {/* 極小のアイコン群（装飾用） */}
-      {[...Array(8)].map((_, index) => {
+      {[...Array(5)].map((_, index) => {
         const Icon = icons[(index + 8) % icons.length]
         const size = Math.random() * 4 + 6 // 6-10pxの極小サイズ
         const position = getRandomPosition()
