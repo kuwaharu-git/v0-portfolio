@@ -1,20 +1,28 @@
 {
   "languages": [
-    { "name": "Python", "icon": "Code" },
-    { "name": "JavaScript", "icon": "Code" },
-    { "name": "TypeScript", "icon": "Code" },
-    { "name": "SQL", "icon": "Database" },
-    { "name": "Bash", "icon": "Code" }
+    { "name": "Python", "icon": "Code", "level": 85 },
+    { "name": "JavaScript", "icon": "Code", "level": 80 },
+    { "name": "TypeScript", "icon": "Code", "level": 75 },
+    { "name": "SQL", "icon": "Database", "level": 70 },
+    { "name": "Bash", "icon": "Code", "level": 65 }
   ],
   "frameworks": [
-    { "name": "FastAPI", "icon": "Code" },
-    { "name": "Next.js", "icon": "Code" },
-    { "name": "React", "icon": "Code" },
-    { "name": "Node.js", "icon": "Code" },
-    { "name": "Django", "icon": "Code" }
+    { "name": "FastAPI", "icon": "Code", "level": 80 },
+    { "name": "Next.js", "icon": "Code", "level": 75 },
+    { "name": "React", "icon": "Code", "level": 70 },
+    { "name": "Node.js", "icon": "Code", "level": 65 },
+    { "name": "Django", "icon": "Code", "level": 60 }
+  ],
+  "tools": [
+    { "name": "Docker", "icon": "Code", "level": 75 },
+    { "name": "AWS", "icon": "Database", "level": 60 },
+    { "name": "Ubuntu", "icon": "Code", "level": 85 },
+    { "name": "Raspberry Pi", "icon": "Code", "level": 70 },
+    { "name": "Git", "icon": "Code", "level": 80 },
+    { "name": "Linux", "icon": "Code", "level": 85 }
   ],
   "certifications": [
-    { "name": "Applied Information Technology Engineer (AP)", "icon": "Award" },
-    { "name": "Registered Information Security Specialist (SC)", "icon": "Shield" }
+    { "name": "Applied Information Technology Engineer (AP)", "icon": "Award", "date": "April 2024" },
+    { "name": "Registered Information Security Specialist (SC)", "icon": "Shield", "date": "October 2024" }
   ]
 }

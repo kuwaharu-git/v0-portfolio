@@ -1,12 +1,20 @@
 export interface Skill {
   name: string
   icon: string
+  level: number
+}
+
+export interface Certification {
+  name: string
+  icon: string
+  date: string
 }
 
 export interface SkillsData {
   languages: Skill[]
   frameworks: Skill[]
-  certifications: Skill[]
+  tools: Skill[]
+  certifications: Certification[]
 }
 
 export interface Project {
