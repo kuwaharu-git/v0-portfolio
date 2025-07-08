@@ -3,12 +3,18 @@ export function parseMarkdown(markdown: string): string {
     return '<p class="text-gray-500 dark:text-gray-400">コンテンツが見つかりませんでした。</p>'
   }
 
-  const html = markdown
+  // 不正な文字列やエスケープ文字を除去
+  const cleanMarkdown = markdown
+    .replace(/\\`\\`\\`/g, "") // \`\`\` のような不正な文字列を除去
+    .replace(/\\\\/g, "\\") // 二重エスケープを修正
+    .trim()
+
+  const html = cleanMarkdown
     // コードブロックを先に処理（他の変換と干渉しないように）
-    .replace(
-      /```([\s\S]*?)```/gim,
-      '<pre class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-x-auto mb-6 border"><code class="text-sm text-gray-800 dark:text-gray-200">$1</code></pre>',
-    )
+    .replace(/```[\s\S]*?```/gim, (match) => {
+      const content = match.replace(/```/g, "").trim()
+      return `<pre class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-x-auto mb-6 border"><code class="text-sm text-gray-800 dark:text-gray-200">${content}</code></pre>`
+    })
 
     // ヘッダー
     .replace(/^### (.*$)/gim, '<h3 class="text-lg font-semibold mb-3 mt-6 text-gray-900 dark:text-white">$1</h3>')
@@ -30,8 +36,8 @@ export function parseMarkdown(markdown: string): string {
     // リスト項目
     .replace(/^- (.*$)/gim, '<li class="mb-2 text-gray-600 dark:text-gray-300">$1</li>')
 
-    // 段落の分割
-    .split("\n\n")
+    // 段落の分割と処理
+    .split(/\n\s*\n/)
     .map((paragraph) => {
       paragraph = paragraph.trim()
       if (!paragraph) return ""
@@ -41,7 +47,7 @@ export function parseMarkdown(markdown: string): string {
         return `<ul class="list-disc list-inside mb-6 space-y-1">${paragraph}</ul>`
       }
 
-      // ヘッダーの場合はそのまま
+      // ヘッダーやコードブロックの場合はそのまま
       if (paragraph.startsWith("<h") || paragraph.startsWith("<pre")) {
         return paragraph
       }
@@ -49,6 +55,7 @@ export function parseMarkdown(markdown: string): string {
       // 通常の段落
       return `<p class="mb-4 text-gray-600 dark:text-gray-300 leading-relaxed">${paragraph}</p>`
     })
+    .filter(Boolean) // 空の要素を除去
     .join("")
 
   return html

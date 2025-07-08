@@ -26,28 +26,41 @@ export function ProjectDetailDialog({ project, open, onOpenChange }: ProjectDeta
   const [content, setContent] = useState<string>("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [rawMarkdown, setRawMarkdown] = useState<string>("")
 
   useEffect(() => {
     if (open && project?.detailFile) {
       setLoading(true)
       setError(null)
       setContent("")
+      setRawMarkdown("")
 
-      console.log("Fetching project details for:", project.detailFile)
+      console.log("=== Project Detail Debug ===")
+      console.log("Project:", project.title)
+      console.log("Detail file:", project.detailFile)
+      console.log("Full URL:", `${window.location.origin}/${project.detailFile}`)
 
       fetch(`/${project.detailFile}`)
         .then((response) => {
           console.log("Response status:", response.status)
+          console.log("Response headers:", Object.fromEntries(response.headers.entries()))
+
           if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`)
           }
           return response.text()
         })
         .then((markdown) => {
-          console.log("Fetched markdown length:", markdown.length)
-          console.log("Markdown preview:", markdown.substring(0, 100))
+          console.log("Raw markdown length:", markdown.length)
+          console.log("Raw markdown (first 200 chars):", markdown.substring(0, 200))
+          console.log("Raw markdown (last 200 chars):", markdown.substring(Math.max(0, markdown.length - 200)))
+
+          setRawMarkdown(markdown)
+
           const parsedContent = parseMarkdown(markdown)
           console.log("Parsed content length:", parsedContent.length)
+          console.log("Parsed content preview:", parsedContent.substring(0, 200))
+
           setContent(parsedContent)
         })
         .catch((err) => {
@@ -95,6 +108,18 @@ export function ProjectDetailDialog({ project, open, onOpenChange }: ProjectDeta
             </Button>
           </div>
 
+          {/* デバッグ情報（開発時のみ表示） */}
+          {process.env.NODE_ENV === "development" && rawMarkdown && (
+            <details className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg">
+              <summary className="cursor-pointer text-sm font-medium">Debug Info</summary>
+              <div className="mt-2 text-xs">
+                <p>File: {project.detailFile}</p>
+                <p>Raw length: {rawMarkdown.length}</p>
+                <p>Parsed length: {content.length}</p>
+              </div>
+            </details>
+          )}
+
           {/* コンテンツ */}
           <div className="prose prose-gray dark:prose-invert max-w-none">
             {loading && (
@@ -114,7 +139,13 @@ export function ProjectDetailDialog({ project, open, onOpenChange }: ProjectDeta
               <div className="markdown-content" dangerouslySetInnerHTML={{ __html: content }} />
             )}
 
-            {!loading && !error && !content && (
+            {!loading && !error && !content && rawMarkdown && (
+              <div className="text-yellow-600 dark:text-yellow-400 text-center py-8 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
+                マークダウンファイルは読み込まれましたが、パースに失敗しました。
+              </div>
+            )}
+
+            {!loading && !error && !content && !rawMarkdown && (
               <div className="text-gray-500 dark:text-gray-400 text-center py-8">
                 コンテンツが見つかりませんでした。
               </div>
