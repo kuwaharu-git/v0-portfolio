@@ -1,9 +1,10 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Code, Database, Shield, Cpu, Globe, Zap } from "lucide-react"
+import { Code, Database, Shield } from "lucide-react"
 
-const icons = [Code, Database, Shield, Cpu, Globe, Zap]
+// Reduced from 6 to 3 icons
+const icons = [Code, Database, Shield]
 
 export function FloatingElements() {
   return (
@@ -11,24 +12,23 @@ export function FloatingElements() {
       {icons.map((Icon, index) => (
         <motion.div
           key={index}
-          className="absolute text-blue-500/10 dark:text-blue-400/10"
+          className="absolute text-blue-500/8 dark:text-blue-400/8"
           style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
+            left: `${20 + index * 30}%`,
+            top: `${20 + index * 25}%`,
           }}
           animate={{
-            y: [0, -20, 0],
-            x: [0, 10, 0],
-            rotate: [0, 180, 360],
+            y: [0, -15, 0],
+            rotate: [0, 360],
           }}
           transition={{
-            duration: 10 + Math.random() * 10,
+            duration: 15 + index * 5,
             repeat: Number.POSITIVE_INFINITY,
             ease: "easeInOut",
-            delay: Math.random() * 5,
+            delay: index * 2,
           }}
         >
-          <Icon size={24 + Math.random() * 24} />
+          <Icon size={20} />
         </motion.div>
       ))}
     </div>

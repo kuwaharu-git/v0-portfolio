@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
 import {
   Moon,
@@ -64,16 +64,17 @@ const getSkillLevelColor = (level: number): string => {
   return "text-red-600 dark:text-red-400"
 }
 
+// Optimized animation variants
 const fadeInUp = {
-  initial: { opacity: 0, y: 60 },
+  initial: { opacity: 0, y: 30 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6, ease: "easeOut" },
+  transition: { duration: 0.4, ease: "easeOut" },
 }
 
 const staggerContainer = {
   animate: {
     transition: {
-      staggerChildren: 0.1,
+      staggerChildren: 0.08,
     },
   },
 }
@@ -88,10 +89,22 @@ export default function Portfolio() {
   const [error, setError] = useState<string | null>(null)
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
 
   const { scrollYProgress } = useScroll()
-  const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "100%"])
+  const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "50%"])
+
+  // Memoize social links to prevent re-renders
+  const socialLinks = useMemo(
+    () => [
+      { icon: Github, href: "#" },
+      { icon: Twitter, href: "#" },
+      { icon: Globe, href: "#" },
+      { icon: Mail, href: "#" },
+    ],
+    [],
+  )
+
+  const navItems = useMemo(() => ["About", "Skills", "Projects", "Career"], [])
 
   useEffect(() => {
     const loadData = async () => {
@@ -119,15 +132,6 @@ export default function Portfolio() {
     }
   }, [darkMode])
 
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY })
-    }
-
-    window.addEventListener("mousemove", handleMouseMove)
-    return () => window.removeEventListener("mousemove", handleMouseMove)
-  }, [])
-
   const toggleDarkMode = () => {
     setDarkMode(!darkMode)
   }
@@ -138,22 +142,16 @@ export default function Portfolio() {
         <AnimatedBackground />
         <motion.div
           className="text-center z-10"
-          initial={{ opacity: 0, scale: 0.8 }}
+          initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.3 }}
         >
           <motion.div
-            className="w-32 h-32 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"
+            className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
           />
-          <motion.p
-            className="text-gray-600 dark:text-gray-300 text-lg"
-            animate={{ opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
-          >
-            Loading...
-          </motion.p>
+          <p className="text-gray-600 dark:text-gray-300">Loading...</p>
         </motion.div>
       </div>
     )
@@ -176,22 +174,12 @@ export default function Portfolio() {
       <FloatingElements />
       <ScrollIndicator />
 
-      {/* Mouse follower */}
-      <motion.div
-        className="fixed w-6 h-6 bg-blue-500/20 rounded-full pointer-events-none z-50 mix-blend-difference"
-        animate={{
-          x: mousePosition.x - 12,
-          y: mousePosition.y - 12,
-        }}
-        transition={{ type: "spring", stiffness: 500, damping: 28 }}
-      />
-
       {/* Navigation */}
       <motion.nav
-        className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700"
+        className="fixed top-0 left-0 right-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700"
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.3 }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
@@ -205,7 +193,7 @@ export default function Portfolio() {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-6">
-              {["About", "Skills", "Projects", "Career"].map((item, index) => (
+              {navItems.map((item, index) => (
                 <motion.a
                   key={item}
                   href={`#${item.toLowerCase()}`}
@@ -216,12 +204,6 @@ export default function Portfolio() {
                   whileHover={{ y: -2 }}
                 >
                   {item}
-                  <motion.div
-                    className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-500"
-                    initial={{ scaleX: 0 }}
-                    whileHover={{ scaleX: 1 }}
-                    transition={{ duration: 0.2 }}
-                  />
                 </motion.a>
               ))}
               <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -269,27 +251,7 @@ export default function Portfolio() {
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="text-gray-600 dark:text-gray-300"
               >
-                <AnimatePresence mode="wait">
-                  {mobileMenuOpen ? (
-                    <motion.div
-                      key="x"
-                      initial={{ rotate: -90, opacity: 0 }}
-                      animate={{ rotate: 0, opacity: 1 }}
-                      exit={{ rotate: 90, opacity: 0 }}
-                    >
-                      <X className="w-6 h-6" />
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="menu"
-                      initial={{ rotate: 90, opacity: 0 }}
-                      animate={{ rotate: 0, opacity: 1 }}
-                      exit={{ rotate: -90, opacity: 0 }}
-                    >
-                      <Menu className="w-6 h-6" />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </Button>
             </div>
           </div>
@@ -302,21 +264,18 @@ export default function Portfolio() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3 }}
+                transition={{ duration: 0.2 }}
               >
                 <div className="px-2 pt-2 pb-3 space-y-1 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-                  {["About", "Skills", "Projects", "Career"].map((item, index) => (
-                    <motion.a
+                  {navItems.map((item) => (
+                    <a
                       key={item}
                       href={`#${item.toLowerCase()}`}
                       onClick={() => setMobileMenuOpen(false)}
                       className="block px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
                     >
                       {item}
-                    </motion.a>
+                    </a>
                   ))}
                 </div>
               </motion.div>
@@ -330,23 +289,23 @@ export default function Portfolio() {
         <motion.div className="max-w-7xl mx-auto text-center z-10" style={{ y: backgroundY }}>
           <motion.div
             className="mb-8"
-            initial={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
           >
             <motion.h1
               className="text-5xl md:text-7xl font-bold text-gray-900 dark:text-white mb-4"
-              initial={{ opacity: 0, y: 50 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
             >
               <TypewriterText text="kuwaharu" />
             </motion.h1>
             <motion.p
               className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8"
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
             >
               <TypewriterText text="Backend & Security Enthusiast" delay={2000} />
             </motion.p>
@@ -356,18 +315,13 @@ export default function Portfolio() {
               initial="initial"
               animate="animate"
             >
-              {[
-                { icon: Github, href: "#" },
-                { icon: Twitter, href: "#" },
-                { icon: Globe, href: "#" },
-                { icon: Mail, href: "#" },
-              ].map((social, index) => (
+              {socialLinks.map((social, index) => (
                 <motion.a
                   key={index}
                   href={social.href}
                   className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
                   variants={fadeInUp}
-                  whileHover={{ scale: 1.2, rotate: 5 }}
+                  whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
                   <social.icon className="w-8 h-8" />
@@ -379,7 +333,7 @@ export default function Portfolio() {
 
         <motion.div
           className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-          animate={{ y: [0, 10, 0] }}
+          animate={{ y: [0, 8, 0] }}
           transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
         >
           <ChevronDown className="w-6 h-6 text-gray-400" />
@@ -392,15 +346,15 @@ export default function Portfolio() {
         className="py-20 px-4 sm:px-6 lg:px-8 relative z-10"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
+        transition={{ duration: 0.5 }}
         viewport={{ once: true }}
       >
         <div className="max-w-4xl mx-auto">
           <motion.h2
             className="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-white mb-12"
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.4 }}
             viewport={{ once: true }}
           >
             About Me
@@ -408,9 +362,9 @@ export default function Portfolio() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <motion.div
               className="text-center md:text-left"
-              initial={{ opacity: 0, x: -50 }}
+              initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.4 }}
               viewport={{ once: true }}
             >
               <motion.div
@@ -418,56 +372,33 @@ export default function Portfolio() {
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.3 }}
               >
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500"
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 20, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
-                />
                 <User className="w-24 h-24 text-white relative z-10" />
               </motion.div>
             </motion.div>
             <motion.div
-              initial={{ opacity: 0, x: 50 }}
+              initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
               viewport={{ once: true }}
             >
-              <motion.p
-                className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-6"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                viewport={{ once: true }}
-              >
+              <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
                 I'm a student at a 4-year technical college (graduating in 2027), passionate about backend development
                 and cybersecurity. I enjoy building secure and scalable web applications using Python and JavaScript.
-              </motion.p>
-              <motion.p
-                className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-6"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-                viewport={{ once: true }}
-              >
+              </p>
+              <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
                 My journey in technology is driven by a deep curiosity about how systems work and how to make them more
                 secure. I'm constantly learning new technologies and applying them to real-world projects.
-              </motion.p>
-              <motion.div
-                className="space-y-2"
-                variants={staggerContainer}
-                initial="initial"
-                whileInView="animate"
-                viewport={{ once: true }}
-              >
-                <motion.div className="flex items-center text-gray-600 dark:text-gray-300" variants={fadeInUp}>
+              </p>
+              <div className="space-y-2">
+                <div className="flex items-center text-gray-600 dark:text-gray-300">
                   <MapPin className="w-5 h-5 mr-2" />
                   <span>Japan</span>
-                </motion.div>
-                <motion.div className="flex items-center text-gray-600 dark:text-gray-300" variants={fadeInUp}>
+                </div>
+                <div className="flex items-center text-gray-600 dark:text-gray-300">
                   <GraduationCap className="w-5 h-5 mr-2" />
                   <span>Technical College Student (Class of 2027)</span>
-                </motion.div>
-              </motion.div>
+                </div>
+              </div>
             </motion.div>
           </div>
         </div>
@@ -479,15 +410,15 @@ export default function Portfolio() {
         className="py-20 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm relative z-10"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
+        transition={{ duration: 0.5 }}
         viewport={{ once: true }}
       >
         <div className="max-w-6xl mx-auto">
           <motion.h2
             className="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-white mb-12"
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.4 }}
             viewport={{ once: true }}
           >
             Skills & Expertise
@@ -497,9 +428,9 @@ export default function Portfolio() {
             <div className="space-y-12">
               {/* Languages */}
               <motion.div
-                initial={{ opacity: 0, y: 50 }}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
+                transition={{ duration: 0.4 }}
                 viewport={{ once: true }}
               >
                 <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Languages</h3>
@@ -512,15 +443,13 @@ export default function Portfolio() {
                 >
                   {skillsData.languages.map((skill, index) => (
                     <motion.div key={index} variants={fadeInUp}>
-                      <Card className="hover:shadow-xl transition-all duration-300 group border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+                      <Card className="hover:shadow-lg transition-all duration-300 group border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
                         <CardContent className="p-6">
                           <div className="flex items-center mb-4">
-                            <motion.div whileHover={{ rotate: 360 }} transition={{ duration: 0.5 }}>
-                              <IconComponent
-                                iconName={skill.icon}
-                                className="w-8 h-8 mr-3 text-blue-600 dark:text-blue-400"
-                              />
-                            </motion.div>
+                            <IconComponent
+                              iconName={skill.icon}
+                              className="w-8 h-8 mr-3 text-blue-600 dark:text-blue-400"
+                            />
                             <div className="flex-1">
                               <h4 className="font-medium text-gray-900 dark:text-white">{skill.name}</h4>
                               <span className={`text-sm font-medium ${getSkillLevelColor(skill.level)}`}>
@@ -529,14 +458,7 @@ export default function Portfolio() {
                             </div>
                             <span className="text-sm font-bold text-gray-600 dark:text-gray-300">{skill.level}%</span>
                           </div>
-                          <motion.div
-                            initial={{ width: 0 }}
-                            whileInView={{ width: "100%" }}
-                            transition={{ duration: 1, delay: index * 0.1 }}
-                            viewport={{ once: true }}
-                          >
-                            <Progress value={skill.level} className="h-2" />
-                          </motion.div>
+                          <Progress value={skill.level} className="h-2" />
                         </CardContent>
                       </Card>
                     </motion.div>
@@ -546,9 +468,9 @@ export default function Portfolio() {
 
               {/* Frameworks */}
               <motion.div
-                initial={{ opacity: 0, y: 50 }}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
+                transition={{ duration: 0.4, delay: 0.1 }}
                 viewport={{ once: true }}
               >
                 <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Frameworks & Libraries</h3>
@@ -561,15 +483,13 @@ export default function Portfolio() {
                 >
                   {skillsData.frameworks.map((skill, index) => (
                     <motion.div key={index} variants={fadeInUp}>
-                      <Card className="hover:shadow-xl transition-all duration-300 group border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+                      <Card className="hover:shadow-lg transition-all duration-300 group border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
                         <CardContent className="p-6">
                           <div className="flex items-center mb-4">
-                            <motion.div whileHover={{ scale: 1.2 }} transition={{ duration: 0.3 }}>
-                              <IconComponent
-                                iconName={skill.icon}
-                                className="w-8 h-8 mr-3 text-green-600 dark:text-green-400"
-                              />
-                            </motion.div>
+                            <IconComponent
+                              iconName={skill.icon}
+                              className="w-8 h-8 mr-3 text-green-600 dark:text-green-400"
+                            />
                             <div className="flex-1">
                               <h4 className="font-medium text-gray-900 dark:text-white">{skill.name}</h4>
                               <span className={`text-sm font-medium ${getSkillLevelColor(skill.level)}`}>
@@ -578,14 +498,7 @@ export default function Portfolio() {
                             </div>
                             <span className="text-sm font-bold text-gray-600 dark:text-gray-300">{skill.level}%</span>
                           </div>
-                          <motion.div
-                            initial={{ width: 0 }}
-                            whileInView={{ width: "100%" }}
-                            transition={{ duration: 1, delay: index * 0.1 }}
-                            viewport={{ once: true }}
-                          >
-                            <Progress value={skill.level} className="h-2" />
-                          </motion.div>
+                          <Progress value={skill.level} className="h-2" />
                         </CardContent>
                       </Card>
                     </motion.div>
@@ -595,9 +508,9 @@ export default function Portfolio() {
 
               {/* Tools & Technologies */}
               <motion.div
-                initial={{ opacity: 0, y: 50 }}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
+                transition={{ duration: 0.4, delay: 0.2 }}
                 viewport={{ once: true }}
               >
                 <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Tools & Technologies</h3>
@@ -610,15 +523,13 @@ export default function Portfolio() {
                 >
                   {skillsData.tools.map((skill, index) => (
                     <motion.div key={index} variants={fadeInUp}>
-                      <Card className="hover:shadow-xl transition-all duration-300 group border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+                      <Card className="hover:shadow-lg transition-all duration-300 group border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
                         <CardContent className="p-6">
                           <div className="flex items-center mb-4">
-                            <motion.div whileHover={{ y: -5 }} transition={{ duration: 0.3 }}>
-                              <IconComponent
-                                iconName={skill.icon}
-                                className="w-8 h-8 mr-3 text-orange-600 dark:text-orange-400"
-                              />
-                            </motion.div>
+                            <IconComponent
+                              iconName={skill.icon}
+                              className="w-8 h-8 mr-3 text-orange-600 dark:text-orange-400"
+                            />
                             <div className="flex-1">
                               <h4 className="font-medium text-gray-900 dark:text-white">{skill.name}</h4>
                               <span className={`text-sm font-medium ${getSkillLevelColor(skill.level)}`}>
@@ -627,14 +538,7 @@ export default function Portfolio() {
                             </div>
                             <span className="text-sm font-bold text-gray-600 dark:text-gray-300">{skill.level}%</span>
                           </div>
-                          <motion.div
-                            initial={{ width: 0 }}
-                            whileInView={{ width: "100%" }}
-                            transition={{ duration: 1, delay: index * 0.1 }}
-                            viewport={{ once: true }}
-                          >
-                            <Progress value={skill.level} className="h-2" />
-                          </motion.div>
+                          <Progress value={skill.level} className="h-2" />
                         </CardContent>
                       </Card>
                     </motion.div>
@@ -644,9 +548,9 @@ export default function Portfolio() {
 
               {/* Certifications */}
               <motion.div
-                initial={{ opacity: 0, y: 50 }}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.6 }}
+                transition={{ duration: 0.4, delay: 0.3 }}
                 viewport={{ once: true }}
               >
                 <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Certifications</h3>
@@ -659,27 +563,17 @@ export default function Portfolio() {
                 >
                   {skillsData.certifications.map((cert, index) => (
                     <motion.div key={index} variants={fadeInUp}>
-                      <Card className="hover:shadow-xl transition-all duration-300 group border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+                      <Card className="hover:shadow-lg transition-all duration-300 group border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
                         <CardContent className="p-6 flex items-center">
-                          <motion.div whileHover={{ scale: 1.1, rotate: 10 }} transition={{ duration: 0.3 }}>
-                            <IconComponent
-                              iconName={cert.icon}
-                              className="w-8 h-8 mr-4 text-purple-600 dark:text-purple-400"
-                            />
-                          </motion.div>
+                          <IconComponent
+                            iconName={cert.icon}
+                            className="w-8 h-8 mr-4 text-purple-600 dark:text-purple-400"
+                          />
                           <div className="flex-1">
                             <h4 className="font-medium text-gray-900 dark:text-white">{cert.name}</h4>
                             <span className="text-sm font-medium text-blue-600 dark:text-blue-400">{cert.date}</span>
                           </div>
-                          <motion.span
-                            className="text-2xl text-green-600 dark:text-green-400"
-                            initial={{ scale: 0 }}
-                            whileInView={{ scale: 1 }}
-                            transition={{ duration: 0.5, delay: index * 0.2 }}
-                            viewport={{ once: true }}
-                          >
-                            ✓
-                          </motion.span>
+                          <span className="text-2xl text-green-600 dark:text-green-400">✓</span>
                         </CardContent>
                       </Card>
                     </motion.div>
@@ -697,15 +591,15 @@ export default function Portfolio() {
         className="py-20 px-4 sm:px-6 lg:px-8 relative z-10"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
+        transition={{ duration: 0.5 }}
         viewport={{ once: true }}
       >
         <div className="max-w-6xl mx-auto">
           <motion.h2
             className="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-white mb-12"
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.4 }}
             viewport={{ once: true }}
           >
             Featured Projects
@@ -720,19 +614,13 @@ export default function Portfolio() {
             {projectsData.map((project, index) => (
               <motion.div key={index} variants={fadeInUp}>
                 <Card
-                  className="hover:shadow-2xl transition-all duration-500 cursor-pointer group border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm overflow-hidden"
+                  className="hover:shadow-xl transition-all duration-300 cursor-pointer group border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm overflow-hidden"
                   onClick={() => {
                     setSelectedProject(project)
                     setDialogOpen(true)
                   }}
-                  whileHover={{ y: -10, rotateY: 5 }}
-                  style={{ transformStyle: "preserve-3d" }}
+                  whileHover={{ y: -5 }}
                 >
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    initial={{ scale: 0 }}
-                    whileHover={{ scale: 1 }}
-                  />
                   <CardHeader className="relative z-10">
                     <CardTitle className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                       {project.title}
@@ -744,17 +632,9 @@ export default function Portfolio() {
                   <CardContent className="relative z-10">
                     <div className="flex flex-wrap gap-2 mb-4">
                       {project.tags.map((tag, tagIndex) => (
-                        <motion.div
-                          key={tagIndex}
-                          initial={{ opacity: 0, scale: 0 }}
-                          whileInView={{ opacity: 1, scale: 1 }}
-                          transition={{ delay: tagIndex * 0.1 }}
-                          viewport={{ once: true }}
-                        >
-                          <Badge variant="secondary" className="text-xs">
-                            {tag}
-                          </Badge>
-                        </motion.div>
+                        <Badge key={tagIndex} variant="secondary" className="text-xs">
+                          {tag}
+                        </Badge>
                       ))}
                     </div>
                     <div className="flex space-x-4">
@@ -793,51 +673,38 @@ export default function Portfolio() {
         className="py-20 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm relative z-10"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
+        transition={{ duration: 0.5 }}
         viewport={{ once: true }}
       >
         <div className="max-w-4xl mx-auto">
           <motion.h2
             className="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-white mb-12"
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.4 }}
             viewport={{ once: true }}
           >
             Career & History
           </motion.h2>
           <div className="relative">
             {/* Timeline line */}
-            <motion.div
-              className="absolute left-4 md:left-1/2 transform md:-translate-x-px h-full w-0.5 bg-gradient-to-b from-blue-500 to-purple-500"
-              initial={{ height: 0 }}
-              whileInView={{ height: "100%" }}
-              transition={{ duration: 2 }}
-              viewport={{ once: true }}
-            />
+            <div className="absolute left-4 md:left-1/2 transform md:-translate-x-px h-full w-0.5 bg-gradient-to-b from-blue-500 to-purple-500" />
 
             {careerData.map((item, index) => (
               <motion.div
                 key={index}
                 className={`relative flex items-center mb-8 ${index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"}`}
-                initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
+                initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.2 }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
                 viewport={{ once: true }}
               >
                 {/* Timeline dot */}
-                <motion.div
-                  className="absolute left-4 md:left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-600 dark:bg-blue-400 rounded-full border-4 border-white dark:border-gray-800 z-10"
-                  initial={{ scale: 0 }}
-                  whileInView={{ scale: 1 }}
-                  transition={{ duration: 0.5, delay: index * 0.2 }}
-                  viewport={{ once: true }}
-                  whileHover={{ scale: 1.5 }}
-                />
+                <div className="absolute left-4 md:left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-600 dark:bg-blue-400 rounded-full border-4 border-white dark:border-gray-800 z-10" />
 
                 {/* Content */}
                 <div className={`ml-12 md:ml-0 md:w-1/2 ${index % 2 === 0 ? "md:pr-8" : "md:pl-8"}`}>
-                  <motion.div whileHover={{ scale: 1.02, y: -5 }} transition={{ duration: 0.3 }}>
+                  <motion.div whileHover={{ scale: 1.02, y: -2 }} transition={{ duration: 0.2 }}>
                     <Card className="hover:shadow-lg transition-all duration-300 border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
                       <CardContent className="p-6">
                         <div className="flex items-center mb-2">
@@ -861,19 +728,11 @@ export default function Portfolio() {
         className="py-12 px-4 sm:px-6 lg:px-8 border-t border-gray-200 dark:border-gray-700 relative z-10"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
+        transition={{ duration: 0.5 }}
         viewport={{ once: true }}
       >
         <div className="max-w-4xl mx-auto text-center">
-          <motion.p
-            className="text-gray-600 dark:text-gray-300 mb-4"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            Let's connect and build something amazing together!
-          </motion.p>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">Let's connect and build something amazing together!</p>
           <motion.div
             className="flex justify-center space-x-6 mb-6"
             variants={staggerContainer}
@@ -881,33 +740,22 @@ export default function Portfolio() {
             whileInView="animate"
             viewport={{ once: true }}
           >
-            {[
-              { icon: Github, href: "#" },
-              { icon: Twitter, href: "#" },
-              { icon: Globe, href: "#" },
-              { icon: Mail, href: "#" },
-            ].map((social, index) => (
+            {socialLinks.map((social, index) => (
               <motion.a
                 key={index}
                 href={social.href}
                 className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
                 variants={fadeInUp}
-                whileHover={{ scale: 1.2, rotate: 10 }}
+                whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
                 <social.icon className="w-6 h-6" />
               </motion.a>
             ))}
           </motion.div>
-          <motion.p
-            className="text-sm text-gray-500 dark:text-gray-400"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            viewport={{ once: true }}
-          >
+          <p className="text-sm text-gray-500 dark:text-gray-400">
             © 2024 kuwaharu. Built with React and Tailwind CSS.
-          </motion.p>
+          </p>
         </div>
       </motion.footer>
 
