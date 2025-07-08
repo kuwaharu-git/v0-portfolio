@@ -11,6 +11,7 @@ export interface Skill {
 export interface SkillsData {
   languages: Skill[]
   frameworks: Skill[]
+  tools: Skill[]
   certifications: Skill[]
 }
 

@@ -13,6 +13,14 @@
     { "name": "Node.js", "icon": "Code" },
     { "name": "Django", "icon": "Code" }
   ],
+  "tools": [
+    { "name": "Docker", "icon": "Code" },
+    { "name": "AWS", "icon": "Database" },
+    { "name": "Ubuntu", "icon": "Code" },
+    { "name": "Raspberry Pi", "icon": "Code" },
+    { "name": "Git", "icon": "Code" },
+    { "name": "Linux", "icon": "Code" }
+  ],
   "certifications": [
     { "name": "Applied Information Technology Engineer (AP)", "icon": "Award" },
     { "name": "Registered Information Security Specialist (SC)", "icon": "Shield" }
