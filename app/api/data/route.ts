@@ -6,6 +6,7 @@ import { NextResponse } from "next/server"
 export interface Skill {
   name: string
   icon: string
+  level: number
 }
 
 export interface SkillsData {

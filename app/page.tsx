@@ -24,6 +24,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Progress } from "@/components/ui/progress"
 import { getPortfolioData, type SkillsData, type Project, type CareerItem } from "@/lib/data"
 
 const IconComponent = ({ iconName, className = "w-6 h-6" }: { iconName: string; className?: string }) => {
@@ -38,6 +39,22 @@ const IconComponent = ({ iconName, className = "w-6 h-6" }: { iconName: string; 
 
   const Icon = icons[iconName] || Code
   return <Icon className={className} />
+}
+
+const getSkillLevelText = (level: number): string => {
+  if (level >= 90) return "Expert"
+  if (level >= 75) return "Advanced"
+  if (level >= 60) return "Intermediate"
+  if (level >= 40) return "Beginner"
+  return "Learning"
+}
+
+const getSkillLevelColor = (level: number): string => {
+  if (level >= 90) return "text-green-600 dark:text-green-400"
+  if (level >= 75) return "text-blue-600 dark:text-blue-400"
+  if (level >= 60) return "text-yellow-600 dark:text-yellow-400"
+  if (level >= 40) return "text-orange-600 dark:text-orange-400"
+  return "text-red-600 dark:text-red-400"
 }
 
 export default function Portfolio() {
@@ -274,15 +291,24 @@ export default function Portfolio() {
               {/* Languages */}
               <div>
                 <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Languages</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {skillsData.languages.map((skill, index) => (
-                    <Card key={index} className="text-center hover:shadow-lg transition-shadow">
+                    <Card key={index} className="hover:shadow-lg transition-shadow">
                       <CardContent className="p-6">
-                        <IconComponent
-                          iconName={skill.icon}
-                          className="w-8 h-8 mx-auto mb-3 text-blue-600 dark:text-blue-400"
-                        />
-                        <p className="font-medium text-gray-900 dark:text-white">{skill.name}</p>
+                        <div className="flex items-center mb-4">
+                          <IconComponent
+                            iconName={skill.icon}
+                            className="w-8 h-8 mr-3 text-blue-600 dark:text-blue-400"
+                          />
+                          <div className="flex-1">
+                            <h4 className="font-medium text-gray-900 dark:text-white">{skill.name}</h4>
+                            <span className={`text-sm font-medium ${getSkillLevelColor(skill.level)}`}>
+                              {getSkillLevelText(skill.level)}
+                            </span>
+                          </div>
+                          <span className="text-sm font-bold text-gray-600 dark:text-gray-300">{skill.level}%</span>
+                        </div>
+                        <Progress value={skill.level} className="h-2" />
                       </CardContent>
                     </Card>
                   ))}
@@ -292,15 +318,24 @@ export default function Portfolio() {
               {/* Frameworks */}
               <div>
                 <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Frameworks & Libraries</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {skillsData.frameworks.map((skill, index) => (
-                    <Card key={index} className="text-center hover:shadow-lg transition-shadow">
+                    <Card key={index} className="hover:shadow-lg transition-shadow">
                       <CardContent className="p-6">
-                        <IconComponent
-                          iconName={skill.icon}
-                          className="w-8 h-8 mx-auto mb-3 text-green-600 dark:text-green-400"
-                        />
-                        <p className="font-medium text-gray-900 dark:text-white">{skill.name}</p>
+                        <div className="flex items-center mb-4">
+                          <IconComponent
+                            iconName={skill.icon}
+                            className="w-8 h-8 mr-3 text-green-600 dark:text-green-400"
+                          />
+                          <div className="flex-1">
+                            <h4 className="font-medium text-gray-900 dark:text-white">{skill.name}</h4>
+                            <span className={`text-sm font-medium ${getSkillLevelColor(skill.level)}`}>
+                              {getSkillLevelText(skill.level)}
+                            </span>
+                          </div>
+                          <span className="text-sm font-bold text-gray-600 dark:text-gray-300">{skill.level}%</span>
+                        </div>
+                        <Progress value={skill.level} className="h-2" />
                       </CardContent>
                     </Card>
                   ))}
@@ -310,15 +345,24 @@ export default function Portfolio() {
               {/* Tools & Technologies */}
               <div>
                 <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Tools & Technologies</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {skillsData.tools.map((skill, index) => (
-                    <Card key={index} className="text-center hover:shadow-lg transition-shadow">
+                    <Card key={index} className="hover:shadow-lg transition-shadow">
                       <CardContent className="p-6">
-                        <IconComponent
-                          iconName={skill.icon}
-                          className="w-8 h-8 mx-auto mb-3 text-orange-600 dark:text-orange-400"
-                        />
-                        <p className="font-medium text-gray-900 dark:text-white">{skill.name}</p>
+                        <div className="flex items-center mb-4">
+                          <IconComponent
+                            iconName={skill.icon}
+                            className="w-8 h-8 mr-3 text-orange-600 dark:text-orange-400"
+                          />
+                          <div className="flex-1">
+                            <h4 className="font-medium text-gray-900 dark:text-white">{skill.name}</h4>
+                            <span className={`text-sm font-medium ${getSkillLevelColor(skill.level)}`}>
+                              {getSkillLevelText(skill.level)}
+                            </span>
+                          </div>
+                          <span className="text-sm font-bold text-gray-600 dark:text-gray-300">{skill.level}%</span>
+                        </div>
+                        <Progress value={skill.level} className="h-2" />
                       </CardContent>
                     </Card>
                   ))}
@@ -328,15 +372,22 @@ export default function Portfolio() {
               {/* Certifications */}
               <div>
                 <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Certifications</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {skillsData.certifications.map((cert, index) => (
                     <Card key={index} className="hover:shadow-lg transition-shadow">
-                      <CardContent className="p-6 flex items-center">
-                        <IconComponent
-                          iconName={cert.icon}
-                          className="w-8 h-8 mr-4 text-purple-600 dark:text-purple-400"
-                        />
-                        <p className="font-medium text-gray-900 dark:text-white">{cert.name}</p>
+                      <CardContent className="p-6">
+                        <div className="flex items-center mb-4">
+                          <IconComponent
+                            iconName={cert.icon}
+                            className="w-8 h-8 mr-3 text-purple-600 dark:text-purple-400"
+                          />
+                          <div className="flex-1">
+                            <h4 className="font-medium text-gray-900 dark:text-white">{cert.name}</h4>
+                            <span className="text-sm font-medium text-green-600 dark:text-green-400">Certified</span>
+                          </div>
+                          <span className="text-sm font-bold text-green-600 dark:text-green-400">✓</span>
+                        </div>
+                        <Progress value={100} className="h-2" />
                       </CardContent>
                     </Card>
                   ))}
