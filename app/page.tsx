@@ -26,6 +26,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { getPortfolioData, type SkillsData, type Project, type CareerItem } from "@/lib/data"
+import { ProjectDetailDialog } from "@/components/project-detail-dialog"
 
 const IconComponent = ({ iconName, className = "w-6 h-6" }: { iconName: string; className?: string }) => {
   const icons: { [key: string]: any } = {
@@ -65,6 +66,8 @@ export default function Portfolio() {
   const [careerData, setCareerData] = useState<CareerItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null)
+  const [dialogOpen, setDialogOpen] = useState(false)
 
   useEffect(() => {
     const loadData = async () => {
@@ -403,7 +406,14 @@ export default function Portfolio() {
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {projectsData.map((project, index) => (
-              <Card key={index} className="hover:shadow-xl transition-shadow duration-300">
+              <Card
+                key={index}
+                className="hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+                onClick={() => {
+                  setSelectedProject(project)
+                  setDialogOpen(true)
+                }}
+              >
                 <CardHeader>
                   <CardTitle className="text-xl font-bold text-gray-900 dark:text-white">{project.title}</CardTitle>
                   <CardDescription className="text-gray-600 dark:text-gray-300">{project.description}</CardDescription>
@@ -419,6 +429,7 @@ export default function Portfolio() {
                   <div className="flex space-x-4">
                     <a
                       href={project.githubUrl}
+                      onClick={(e) => e.stopPropagation()}
                       className="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
                     >
                       <Github className="w-4 h-4 mr-1" />
@@ -426,6 +437,7 @@ export default function Portfolio() {
                     </a>
                     <a
                       href={project.liveUrl}
+                      onClick={(e) => e.stopPropagation()}
                       className="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
                     >
                       <ExternalLink className="w-4 h-4 mr-1" />
@@ -511,6 +523,8 @@ export default function Portfolio() {
           </p>
         </div>
       </footer>
+      {/* Project Detail Dialog */}
+      <ProjectDetailDialog project={selectedProject} open={dialogOpen} onOpenChange={setDialogOpen} />
     </div>
   )
 }
