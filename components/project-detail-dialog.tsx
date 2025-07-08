@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Github, ExternalLink, RefreshCw } from "lucide-react"
@@ -133,6 +133,7 @@ export function ProjectDetailDialog({ project, open, onOpenChange }: ProjectDeta
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-gray-900 dark:text-white">{project.title}</DialogTitle>
+          <DialogDescription className="text-gray-600 dark:text-gray-300">{project.description}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
