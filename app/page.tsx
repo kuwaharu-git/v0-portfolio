@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
 import {
   Moon,
   Sun,
@@ -20,6 +21,7 @@ import {
   Briefcase,
   Menu,
   X,
+  ChevronDown,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -27,6 +29,10 @@ import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { getPortfolioData, type SkillsData, type Project, type CareerItem } from "@/lib/data"
 import { ProjectDetailDialog } from "@/components/project-detail-dialog"
+import { AnimatedBackground } from "@/components/animated-background"
+import { TypewriterText } from "@/components/typewriter-text"
+import { FloatingElements } from "@/components/floating-elements"
+import { ScrollIndicator } from "@/components/scroll-indicator"
 
 const IconComponent = ({ iconName, className = "w-6 h-6" }: { iconName: string; className?: string }) => {
   const icons: { [key: string]: any } = {
@@ -58,6 +64,20 @@ const getSkillLevelColor = (level: number): string => {
   return "text-red-600 dark:text-red-400"
 }
 
+const fadeInUp = {
+  initial: { opacity: 0, y: 60 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.6, ease: "easeOut" },
+}
+
+const staggerContainer = {
+  animate: {
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+}
+
 export default function Portfolio() {
   const [darkMode, setDarkMode] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -68,6 +88,10 @@ export default function Portfolio() {
   const [error, setError] = useState<string | null>(null)
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+
+  const { scrollYProgress } = useScroll()
+  const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "100%"])
 
   useEffect(() => {
     const loadData = async () => {
@@ -95,17 +119,42 @@ export default function Portfolio() {
     }
   }, [darkMode])
 
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY })
+    }
+
+    window.addEventListener("mousemove", handleMouseMove)
+    return () => window.removeEventListener("mousemove", handleMouseMove)
+  }, [])
+
   const toggleDarkMode = () => {
     setDarkMode(!darkMode)
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900 dark:border-white"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-300">Loading...</p>
-        </div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center relative overflow-hidden">
+        <AnimatedBackground />
+        <motion.div
+          className="text-center z-10"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <motion.div
+            className="w-32 h-32 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+          />
+          <motion.p
+            className="text-gray-600 dark:text-gray-300 text-lg"
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
+          >
+            Loading...
+          </motion.p>
+        </motion.div>
       </div>
     )
   }
@@ -113,51 +162,100 @@ export default function Portfolio() {
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
-        <div className="text-center">
+        <motion.div className="text-center" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <p className="text-red-600 dark:text-red-400 text-xl mb-4">{error}</p>
           <Button onClick={() => window.location.reload()}>Retry</Button>
-        </div>
+        </motion.div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
+    <div className="min-h-screen relative overflow-hidden">
+      <AnimatedBackground />
+      <FloatingElements />
+      <ScrollIndicator />
+
+      {/* Mouse follower */}
+      <motion.div
+        className="fixed w-6 h-6 bg-blue-500/20 rounded-full pointer-events-none z-50 mix-blend-difference"
+        animate={{
+          x: mousePosition.x - 12,
+          y: mousePosition.y - 12,
+        }}
+        transition={{ type: "spring", stiffness: 500, damping: 28 }}
+      />
+
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
+      <motion.nav
+        className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700"
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="font-bold text-xl text-gray-900 dark:text-white">kuwaharu</div>
+            <motion.div
+              className="font-bold text-xl text-gray-900 dark:text-white"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              kuwaharu
+            </motion.div>
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-6">
-              <a
-                href="#about"
-                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-              >
-                About
-              </a>
-              <a
-                href="#skills"
-                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-              >
-                Skills
-              </a>
-              <a
-                href="#projects"
-                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-              >
-                Projects
-              </a>
-              <a
-                href="#career"
-                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-              >
-                Career
-              </a>
-              <Button variant="ghost" size="icon" onClick={toggleDarkMode} className="text-gray-600 dark:text-gray-300">
-                {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-              </Button>
+              {["About", "Skills", "Projects", "Career"].map((item, index) => (
+                <motion.a
+                  key={item}
+                  href={`#${item.toLowerCase()}`}
+                  className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors relative"
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ y: -2 }}
+                >
+                  {item}
+                  <motion.div
+                    className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-500"
+                    initial={{ scaleX: 0 }}
+                    whileHover={{ scaleX: 1 }}
+                    transition={{ duration: 0.2 }}
+                  />
+                </motion.a>
+              ))}
+              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={toggleDarkMode}
+                  className="text-gray-600 dark:text-gray-300"
+                >
+                  <AnimatePresence mode="wait">
+                    {darkMode ? (
+                      <motion.div
+                        key="sun"
+                        initial={{ rotate: -90, opacity: 0 }}
+                        animate={{ rotate: 0, opacity: 1 }}
+                        exit={{ rotate: 90, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <Sun className="w-5 h-5" />
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="moon"
+                        initial={{ rotate: 90, opacity: 0 }}
+                        animate={{ rotate: 0, opacity: 1 }}
+                        exit={{ rotate: -90, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <Moon className="w-5 h-5" />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </Button>
+              </motion.div>
             </div>
 
             {/* Mobile Navigation */}
@@ -171,358 +269,648 @@ export default function Portfolio() {
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="text-gray-600 dark:text-gray-300"
               >
-                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                <AnimatePresence mode="wait">
+                  {mobileMenuOpen ? (
+                    <motion.div
+                      key="x"
+                      initial={{ rotate: -90, opacity: 0 }}
+                      animate={{ rotate: 0, opacity: 1 }}
+                      exit={{ rotate: 90, opacity: 0 }}
+                    >
+                      <X className="w-6 h-6" />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="menu"
+                      initial={{ rotate: 90, opacity: 0 }}
+                      animate={{ rotate: 0, opacity: 1 }}
+                      exit={{ rotate: -90, opacity: 0 }}
+                    >
+                      <Menu className="w-6 h-6" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </Button>
             </div>
           </div>
 
           {/* Mobile Menu */}
-          {mobileMenuOpen && (
-            <div className="md:hidden">
-              <div className="px-2 pt-2 pb-3 space-y-1 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-                <a
-                  href="#about"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-                >
-                  About
-                </a>
-                <a
-                  href="#skills"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-                >
-                  Skills
-                </a>
-                <a
-                  href="#projects"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-                >
-                  Projects
-                </a>
-                <a
-                  href="#career"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-                >
-                  Career
-                </a>
-              </div>
-            </div>
-          )}
+          <AnimatePresence>
+            {mobileMenuOpen && (
+              <motion.div
+                className="md:hidden"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="px-2 pt-2 pb-3 space-y-1 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+                  {["About", "Skills", "Projects", "Career"].map((item, index) => (
+                    <motion.a
+                      key={item}
+                      href={`#${item.toLowerCase()}`}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                    >
+                      {item}
+                    </motion.a>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-      </nav>
+      </motion.nav>
 
       {/* Hero Section */}
-      <section className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto text-center">
-          <div className="mb-8">
-            <h1 className="text-5xl md:text-7xl font-bold text-gray-900 dark:text-white mb-4">kuwaharu</h1>
-            <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8">Backend & Security Enthusiast</p>
-            <div className="flex justify-center space-x-6">
-              <a
-                href="#"
-                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-              >
-                <Github className="w-8 h-8" />
-              </a>
-              <a
-                href="#"
-                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-              >
-                <Twitter className="w-8 h-8" />
-              </a>
-              <a
-                href="#"
-                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-              >
-                <Globe className="w-8 h-8" />
-              </a>
-              <a
-                href="#"
-                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-              >
-                <Mail className="w-8 h-8" />
-              </a>
-            </div>
-          </div>
-        </div>
+      <section className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 relative">
+        <motion.div className="max-w-7xl mx-auto text-center z-10" style={{ y: backgroundY }}>
+          <motion.div
+            className="mb-8"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <motion.h1
+              className="text-5xl md:text-7xl font-bold text-gray-900 dark:text-white mb-4"
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              <TypewriterText text="kuwaharu" />
+            </motion.h1>
+            <motion.p
+              className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
+              <TypewriterText text="Backend & Security Enthusiast" delay={2000} />
+            </motion.p>
+            <motion.div
+              className="flex justify-center space-x-6"
+              variants={staggerContainer}
+              initial="initial"
+              animate="animate"
+            >
+              {[
+                { icon: Github, href: "#" },
+                { icon: Twitter, href: "#" },
+                { icon: Globe, href: "#" },
+                { icon: Mail, href: "#" },
+              ].map((social, index) => (
+                <motion.a
+                  key={index}
+                  href={social.href}
+                  className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                  variants={fadeInUp}
+                  whileHover={{ scale: 1.2, rotate: 5 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <social.icon className="w-8 h-8" />
+                </motion.a>
+              ))}
+            </motion.div>
+          </motion.div>
+        </motion.div>
+
+        <motion.div
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
+        >
+          <ChevronDown className="w-6 h-6 text-gray-400" />
+        </motion.div>
       </section>
 
       {/* About Me Section */}
-      <section id="about" className="py-20 px-4 sm:px-6 lg:px-8">
+      <motion.section
+        id="about"
+        className="py-20 px-4 sm:px-6 lg:px-8 relative z-10"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-white mb-12">About Me</h2>
+          <motion.h2
+            className="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-white mb-12"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            About Me
+          </motion.h2>
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="text-center md:text-left">
-              <div className="w-48 h-48 mx-auto md:mx-0 mb-6 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
-                <User className="w-24 h-24 text-white" />
-              </div>
-            </div>
-            <div>
-              <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
+            <motion.div
+              className="text-center md:text-left"
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+            >
+              <motion.div
+                className="w-48 h-48 mx-auto md:mx-0 mb-6 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center relative overflow-hidden"
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.3 }}
+              >
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 20, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+                />
+                <User className="w-24 h-24 text-white relative z-10" />
+              </motion.div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              viewport={{ once: true }}
+            >
+              <motion.p
+                className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-6"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                viewport={{ once: true }}
+              >
                 I'm a student at a 4-year technical college (graduating in 2027), passionate about backend development
                 and cybersecurity. I enjoy building secure and scalable web applications using Python and JavaScript.
-              </p>
-              <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
+              </motion.p>
+              <motion.p
+                className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-6"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                viewport={{ once: true }}
+              >
                 My journey in technology is driven by a deep curiosity about how systems work and how to make them more
                 secure. I'm constantly learning new technologies and applying them to real-world projects.
-              </p>
-              <div className="flex items-center text-gray-600 dark:text-gray-300 mb-2">
-                <MapPin className="w-5 h-5 mr-2" />
-                <span>Japan</span>
-              </div>
-              <div className="flex items-center text-gray-600 dark:text-gray-300">
-                <GraduationCap className="w-5 h-5 mr-2" />
-                <span>Technical College Student (Class of 2027)</span>
-              </div>
-            </div>
+              </motion.p>
+              <motion.div
+                className="space-y-2"
+                variants={staggerContainer}
+                initial="initial"
+                whileInView="animate"
+                viewport={{ once: true }}
+              >
+                <motion.div className="flex items-center text-gray-600 dark:text-gray-300" variants={fadeInUp}>
+                  <MapPin className="w-5 h-5 mr-2" />
+                  <span>Japan</span>
+                </motion.div>
+                <motion.div className="flex items-center text-gray-600 dark:text-gray-300" variants={fadeInUp}>
+                  <GraduationCap className="w-5 h-5 mr-2" />
+                  <span>Technical College Student (Class of 2027)</span>
+                </motion.div>
+              </motion.div>
+            </motion.div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Skills Section */}
-      <section id="skills" className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-800">
+      <motion.section
+        id="skills"
+        className="py-20 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm relative z-10"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-white mb-12">
+          <motion.h2
+            className="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-white mb-12"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
             Skills & Expertise
-          </h2>
+          </motion.h2>
 
           {skillsData && (
             <div className="space-y-12">
               {/* Languages */}
-              <div>
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+              >
                 <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Languages</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <motion.div
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                  variants={staggerContainer}
+                  initial="initial"
+                  whileInView="animate"
+                  viewport={{ once: true }}
+                >
                   {skillsData.languages.map((skill, index) => (
-                    <Card key={index} className="hover:shadow-lg transition-shadow">
-                      <CardContent className="p-6">
-                        <div className="flex items-center mb-4">
-                          <IconComponent
-                            iconName={skill.icon}
-                            className="w-8 h-8 mr-3 text-blue-600 dark:text-blue-400"
-                          />
-                          <div className="flex-1">
-                            <h4 className="font-medium text-gray-900 dark:text-white">{skill.name}</h4>
-                            <span className={`text-sm font-medium ${getSkillLevelColor(skill.level)}`}>
-                              {getSkillLevelText(skill.level)}
-                            </span>
+                    <motion.div key={index} variants={fadeInUp}>
+                      <Card className="hover:shadow-xl transition-all duration-300 group border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+                        <CardContent className="p-6">
+                          <div className="flex items-center mb-4">
+                            <motion.div whileHover={{ rotate: 360 }} transition={{ duration: 0.5 }}>
+                              <IconComponent
+                                iconName={skill.icon}
+                                className="w-8 h-8 mr-3 text-blue-600 dark:text-blue-400"
+                              />
+                            </motion.div>
+                            <div className="flex-1">
+                              <h4 className="font-medium text-gray-900 dark:text-white">{skill.name}</h4>
+                              <span className={`text-sm font-medium ${getSkillLevelColor(skill.level)}`}>
+                                {getSkillLevelText(skill.level)}
+                              </span>
+                            </div>
+                            <span className="text-sm font-bold text-gray-600 dark:text-gray-300">{skill.level}%</span>
                           </div>
-                          <span className="text-sm font-bold text-gray-600 dark:text-gray-300">{skill.level}%</span>
-                        </div>
-                        <Progress value={skill.level} className="h-2" />
-                      </CardContent>
-                    </Card>
+                          <motion.div
+                            initial={{ width: 0 }}
+                            whileInView={{ width: "100%" }}
+                            transition={{ duration: 1, delay: index * 0.1 }}
+                            viewport={{ once: true }}
+                          >
+                            <Progress value={skill.level} className="h-2" />
+                          </motion.div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
                   ))}
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
 
               {/* Frameworks */}
-              <div>
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                viewport={{ once: true }}
+              >
                 <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Frameworks & Libraries</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <motion.div
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                  variants={staggerContainer}
+                  initial="initial"
+                  whileInView="animate"
+                  viewport={{ once: true }}
+                >
                   {skillsData.frameworks.map((skill, index) => (
-                    <Card key={index} className="hover:shadow-lg transition-shadow">
-                      <CardContent className="p-6">
-                        <div className="flex items-center mb-4">
-                          <IconComponent
-                            iconName={skill.icon}
-                            className="w-8 h-8 mr-3 text-green-600 dark:text-green-400"
-                          />
-                          <div className="flex-1">
-                            <h4 className="font-medium text-gray-900 dark:text-white">{skill.name}</h4>
-                            <span className={`text-sm font-medium ${getSkillLevelColor(skill.level)}`}>
-                              {getSkillLevelText(skill.level)}
-                            </span>
+                    <motion.div key={index} variants={fadeInUp}>
+                      <Card className="hover:shadow-xl transition-all duration-300 group border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+                        <CardContent className="p-6">
+                          <div className="flex items-center mb-4">
+                            <motion.div whileHover={{ scale: 1.2 }} transition={{ duration: 0.3 }}>
+                              <IconComponent
+                                iconName={skill.icon}
+                                className="w-8 h-8 mr-3 text-green-600 dark:text-green-400"
+                              />
+                            </motion.div>
+                            <div className="flex-1">
+                              <h4 className="font-medium text-gray-900 dark:text-white">{skill.name}</h4>
+                              <span className={`text-sm font-medium ${getSkillLevelColor(skill.level)}`}>
+                                {getSkillLevelText(skill.level)}
+                              </span>
+                            </div>
+                            <span className="text-sm font-bold text-gray-600 dark:text-gray-300">{skill.level}%</span>
                           </div>
-                          <span className="text-sm font-bold text-gray-600 dark:text-gray-300">{skill.level}%</span>
-                        </div>
-                        <Progress value={skill.level} className="h-2" />
-                      </CardContent>
-                    </Card>
+                          <motion.div
+                            initial={{ width: 0 }}
+                            whileInView={{ width: "100%" }}
+                            transition={{ duration: 1, delay: index * 0.1 }}
+                            viewport={{ once: true }}
+                          >
+                            <Progress value={skill.level} className="h-2" />
+                          </motion.div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
                   ))}
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
 
               {/* Tools & Technologies */}
-              <div>
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                viewport={{ once: true }}
+              >
                 <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Tools & Technologies</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <motion.div
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                  variants={staggerContainer}
+                  initial="initial"
+                  whileInView="animate"
+                  viewport={{ once: true }}
+                >
                   {skillsData.tools.map((skill, index) => (
-                    <Card key={index} className="hover:shadow-lg transition-shadow">
-                      <CardContent className="p-6">
-                        <div className="flex items-center mb-4">
-                          <IconComponent
-                            iconName={skill.icon}
-                            className="w-8 h-8 mr-3 text-orange-600 dark:text-orange-400"
-                          />
-                          <div className="flex-1">
-                            <h4 className="font-medium text-gray-900 dark:text-white">{skill.name}</h4>
-                            <span className={`text-sm font-medium ${getSkillLevelColor(skill.level)}`}>
-                              {getSkillLevelText(skill.level)}
-                            </span>
+                    <motion.div key={index} variants={fadeInUp}>
+                      <Card className="hover:shadow-xl transition-all duration-300 group border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+                        <CardContent className="p-6">
+                          <div className="flex items-center mb-4">
+                            <motion.div whileHover={{ y: -5 }} transition={{ duration: 0.3 }}>
+                              <IconComponent
+                                iconName={skill.icon}
+                                className="w-8 h-8 mr-3 text-orange-600 dark:text-orange-400"
+                              />
+                            </motion.div>
+                            <div className="flex-1">
+                              <h4 className="font-medium text-gray-900 dark:text-white">{skill.name}</h4>
+                              <span className={`text-sm font-medium ${getSkillLevelColor(skill.level)}`}>
+                                {getSkillLevelText(skill.level)}
+                              </span>
+                            </div>
+                            <span className="text-sm font-bold text-gray-600 dark:text-gray-300">{skill.level}%</span>
                           </div>
-                          <span className="text-sm font-bold text-gray-600 dark:text-gray-300">{skill.level}%</span>
-                        </div>
-                        <Progress value={skill.level} className="h-2" />
-                      </CardContent>
-                    </Card>
+                          <motion.div
+                            initial={{ width: 0 }}
+                            whileInView={{ width: "100%" }}
+                            transition={{ duration: 1, delay: index * 0.1 }}
+                            viewport={{ once: true }}
+                          >
+                            <Progress value={skill.level} className="h-2" />
+                          </motion.div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
                   ))}
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
 
               {/* Certifications */}
-              <div>
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.6 }}
+                viewport={{ once: true }}
+              >
                 <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Certifications</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <motion.div
+                  className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                  variants={staggerContainer}
+                  initial="initial"
+                  whileInView="animate"
+                  viewport={{ once: true }}
+                >
                   {skillsData.certifications.map((cert, index) => (
-                    <Card key={index} className="hover:shadow-lg transition-shadow">
-                      <CardContent className="p-6 flex items-center">
-                        <IconComponent
-                          iconName={cert.icon}
-                          className="w-8 h-8 mr-4 text-purple-600 dark:text-purple-400"
-                        />
-                        <div className="flex-1">
-                          <h4 className="font-medium text-gray-900 dark:text-white">{cert.name}</h4>
-                          <span className="text-sm font-medium text-blue-600 dark:text-blue-400">{cert.date}</span>
-                        </div>
-                        <span className="text-2xl text-green-600 dark:text-green-400">✓</span>
-                      </CardContent>
-                    </Card>
+                    <motion.div key={index} variants={fadeInUp}>
+                      <Card className="hover:shadow-xl transition-all duration-300 group border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+                        <CardContent className="p-6 flex items-center">
+                          <motion.div whileHover={{ scale: 1.1, rotate: 10 }} transition={{ duration: 0.3 }}>
+                            <IconComponent
+                              iconName={cert.icon}
+                              className="w-8 h-8 mr-4 text-purple-600 dark:text-purple-400"
+                            />
+                          </motion.div>
+                          <div className="flex-1">
+                            <h4 className="font-medium text-gray-900 dark:text-white">{cert.name}</h4>
+                            <span className="text-sm font-medium text-blue-600 dark:text-blue-400">{cert.date}</span>
+                          </div>
+                          <motion.span
+                            className="text-2xl text-green-600 dark:text-green-400"
+                            initial={{ scale: 0 }}
+                            whileInView={{ scale: 1 }}
+                            transition={{ duration: 0.5, delay: index * 0.2 }}
+                            viewport={{ once: true }}
+                          >
+                            ✓
+                          </motion.span>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
                   ))}
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
             </div>
           )}
         </div>
-      </section>
+      </motion.section>
 
       {/* Projects Section */}
-      <section id="projects" className="py-20 px-4 sm:px-6 lg:px-8">
+      <motion.section
+        id="projects"
+        className="py-20 px-4 sm:px-6 lg:px-8 relative z-10"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-white mb-12">
+          <motion.h2
+            className="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-white mb-12"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
             Featured Projects
-          </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          </motion.h2>
+          <motion.div
+            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+            variants={staggerContainer}
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true }}
+          >
             {projectsData.map((project, index) => (
-              <Card
-                key={index}
-                className="hover:shadow-xl transition-shadow duration-300 cursor-pointer"
-                onClick={() => {
-                  setSelectedProject(project)
-                  setDialogOpen(true)
-                }}
-              >
-                <CardHeader>
-                  <CardTitle className="text-xl font-bold text-gray-900 dark:text-white">{project.title}</CardTitle>
-                  <CardDescription className="text-gray-600 dark:text-gray-300">{project.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {project.tags.map((tag, tagIndex) => (
-                      <Badge key={tagIndex} variant="secondary" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                  <div className="flex space-x-4">
-                    <a
-                      href={project.githubUrl}
-                      onClick={(e) => e.stopPropagation()}
-                      className="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-                    >
-                      <Github className="w-4 h-4 mr-1" />
-                      Code
-                    </a>
-                    <a
-                      href={project.liveUrl}
-                      onClick={(e) => e.stopPropagation()}
-                      className="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-                    >
-                      <ExternalLink className="w-4 h-4 mr-1" />
-                      Live Demo
-                    </a>
-                  </div>
-                </CardContent>
-              </Card>
+              <motion.div key={index} variants={fadeInUp}>
+                <Card
+                  className="hover:shadow-2xl transition-all duration-500 cursor-pointer group border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm overflow-hidden"
+                  onClick={() => {
+                    setSelectedProject(project)
+                    setDialogOpen(true)
+                  }}
+                  whileHover={{ y: -10, rotateY: 5 }}
+                  style={{ transformStyle: "preserve-3d" }}
+                >
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    initial={{ scale: 0 }}
+                    whileHover={{ scale: 1 }}
+                  />
+                  <CardHeader className="relative z-10">
+                    <CardTitle className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                      {project.title}
+                    </CardTitle>
+                    <CardDescription className="text-gray-600 dark:text-gray-300">
+                      {project.description}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="relative z-10">
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {project.tags.map((tag, tagIndex) => (
+                        <motion.div
+                          key={tagIndex}
+                          initial={{ opacity: 0, scale: 0 }}
+                          whileInView={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: tagIndex * 0.1 }}
+                          viewport={{ once: true }}
+                        >
+                          <Badge variant="secondary" className="text-xs">
+                            {tag}
+                          </Badge>
+                        </motion.div>
+                      ))}
+                    </div>
+                    <div className="flex space-x-4">
+                      <motion.a
+                        href={project.githubUrl}
+                        onClick={(e) => e.stopPropagation()}
+                        className="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Github className="w-4 h-4 mr-1" />
+                        Code
+                      </motion.a>
+                      <motion.a
+                        href={project.liveUrl}
+                        onClick={(e) => e.stopPropagation()}
+                        className="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <ExternalLink className="w-4 h-4 mr-1" />
+                        Live Demo
+                      </motion.a>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Career & History Section */}
-      <section id="career" className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-800">
+      <motion.section
+        id="career"
+        className="py-20 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm relative z-10"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-white mb-12">
+          <motion.h2
+            className="text-3xl md:text-4xl font-bold text-center text-gray-900 dark:text-white mb-12"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
             Career & History
-          </h2>
+          </motion.h2>
           <div className="relative">
             {/* Timeline line */}
-            <div className="absolute left-4 md:left-1/2 transform md:-translate-x-px h-full w-0.5 bg-gray-300 dark:bg-gray-600"></div>
+            <motion.div
+              className="absolute left-4 md:left-1/2 transform md:-translate-x-px h-full w-0.5 bg-gradient-to-b from-blue-500 to-purple-500"
+              initial={{ height: 0 }}
+              whileInView={{ height: "100%" }}
+              transition={{ duration: 2 }}
+              viewport={{ once: true }}
+            />
 
             {careerData.map((item, index) => (
-              <div
+              <motion.div
                 key={index}
                 className={`relative flex items-center mb-8 ${index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"}`}
+                initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.2 }}
+                viewport={{ once: true }}
               >
                 {/* Timeline dot */}
-                <div className="absolute left-4 md:left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-600 dark:bg-blue-400 rounded-full border-4 border-white dark:border-gray-800"></div>
+                <motion.div
+                  className="absolute left-4 md:left-1/2 transform -translate-x-1/2 w-4 h-4 bg-blue-600 dark:bg-blue-400 rounded-full border-4 border-white dark:border-gray-800 z-10"
+                  initial={{ scale: 0 }}
+                  whileInView={{ scale: 1 }}
+                  transition={{ duration: 0.5, delay: index * 0.2 }}
+                  viewport={{ once: true }}
+                  whileHover={{ scale: 1.5 }}
+                />
 
                 {/* Content */}
                 <div className={`ml-12 md:ml-0 md:w-1/2 ${index % 2 === 0 ? "md:pr-8" : "md:pl-8"}`}>
-                  <Card className="hover:shadow-lg transition-shadow">
-                    <CardContent className="p-6">
-                      <div className="flex items-center mb-2">
-                        <Calendar className="w-4 h-4 mr-2 text-blue-600 dark:text-blue-400" />
-                        <span className="text-sm font-medium text-blue-600 dark:text-blue-400">{item.date}</span>
-                      </div>
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{item.title}</h3>
-                      <p className="text-gray-600 dark:text-gray-300">{item.description}</p>
-                    </CardContent>
-                  </Card>
+                  <motion.div whileHover={{ scale: 1.02, y: -5 }} transition={{ duration: 0.3 }}>
+                    <Card className="hover:shadow-lg transition-all duration-300 border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+                      <CardContent className="p-6">
+                        <div className="flex items-center mb-2">
+                          <Calendar className="w-4 h-4 mr-2 text-blue-600 dark:text-blue-400" />
+                          <span className="text-sm font-medium text-blue-600 dark:text-blue-400">{item.date}</span>
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{item.title}</h3>
+                        <p className="text-gray-600 dark:text-gray-300">{item.description}</p>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Footer */}
-      <footer className="py-12 px-4 sm:px-6 lg:px-8 border-t border-gray-200 dark:border-gray-700">
+      <motion.footer
+        className="py-12 px-4 sm:px-6 lg:px-8 border-t border-gray-200 dark:border-gray-700 relative z-10"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+      >
         <div className="max-w-4xl mx-auto text-center">
-          <p className="text-gray-600 dark:text-gray-300 mb-4">Let's connect and build something amazing together!</p>
-          <div className="flex justify-center space-x-6 mb-6">
-            <a
-              href="#"
-              className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-            >
-              <Github className="w-6 h-6" />
-            </a>
-            <a
-              href="#"
-              className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-            >
-              <Twitter className="w-6 h-6" />
-            </a>
-            <a
-              href="#"
-              className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-            >
-              <Globe className="w-6 h-6" />
-            </a>
-            <a
-              href="#"
-              className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-            >
-              <Mail className="w-6 h-6" />
-            </a>
-          </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <motion.p
+            className="text-gray-600 dark:text-gray-300 mb-4"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            Let's connect and build something amazing together!
+          </motion.p>
+          <motion.div
+            className="flex justify-center space-x-6 mb-6"
+            variants={staggerContainer}
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true }}
+          >
+            {[
+              { icon: Github, href: "#" },
+              { icon: Twitter, href: "#" },
+              { icon: Globe, href: "#" },
+              { icon: Mail, href: "#" },
+            ].map((social, index) => (
+              <motion.a
+                key={index}
+                href={social.href}
+                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                variants={fadeInUp}
+                whileHover={{ scale: 1.2, rotate: 10 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <social.icon className="w-6 h-6" />
+              </motion.a>
+            ))}
+          </motion.div>
+          <motion.p
+            className="text-sm text-gray-500 dark:text-gray-400"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            viewport={{ once: true }}
+          >
             © 2024 kuwaharu. Built with React and Tailwind CSS.
-          </p>
+          </motion.p>
         </div>
-      </footer>
+      </motion.footer>
+
       {/* Project Detail Dialog */}
       <ProjectDetailDialog project={selectedProject} open={dialogOpen} onOpenChange={setDialogOpen} />
     </div>
