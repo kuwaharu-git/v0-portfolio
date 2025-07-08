@@ -25,7 +25,7 @@ export function AnimatedBackground() {
           ],
         }}
         transition={{
-          duration: 20,
+          duration: 15,
           repeat: Number.POSITIVE_INFINITY,
           ease: "easeInOut",
         }}
@@ -40,7 +40,7 @@ export function AnimatedBackground() {
           scale: [1, 1.2, 1],
         }}
         transition={{
-          duration: 40,
+          duration: 25,
           repeat: Number.POSITIVE_INFINITY,
           ease: "easeInOut",
         }}
@@ -54,7 +54,7 @@ export function AnimatedBackground() {
           scale: [1, 0.8, 1],
         }}
         transition={{
-          duration: 35,
+          duration: 22,
           repeat: Number.POSITIVE_INFINITY,
           ease: "easeInOut",
           delay: 5,
@@ -69,7 +69,7 @@ export function AnimatedBackground() {
           scale: [1, 1.3, 1],
         }}
         transition={{
-          duration: 45,
+          duration: 28,
           repeat: Number.POSITIVE_INFINITY,
           ease: "easeInOut",
           delay: 10,
