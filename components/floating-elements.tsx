@@ -26,6 +26,7 @@ export function FloatingElements() {
         const Icon = icons[index % icons.length]
         const size = getRandomSize()
         const position = getRandomPosition()
+        const opacity = 0.5
 
         return (
           <motion.div
@@ -34,6 +35,7 @@ export function FloatingElements() {
             style={{
               left: `${position.left}%`,
               top: `${position.top}%`,
+              opacity: `${opacity}`
             }}
             animate={{
               y: [0, -20 - Math.random() * 10, 0],
