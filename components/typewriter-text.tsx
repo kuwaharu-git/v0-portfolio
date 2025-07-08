@@ -47,3 +47,5 @@ export function TypewriterText({ text, delay = 0, speed = 100 }: TypewriterTextP
     </span>
   )
 }
+
+export default TypewriterText

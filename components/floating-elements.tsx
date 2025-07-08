@@ -34,3 +34,5 @@ export function FloatingElements() {
     </div>
   )
 }
+
+export default FloatingElements

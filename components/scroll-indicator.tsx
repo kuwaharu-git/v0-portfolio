@@ -12,3 +12,5 @@ export function ScrollIndicator() {
     />
   )
 }
+
+export default ScrollIndicator
