@@ -50,7 +50,7 @@
 
 次に、プロジェクトデータにマークダウンファイルのパスを追加します：
 
-```typescriptreact file="data/projects.json"
+\`\`\`typescriptreact file="data/projects.json"
 [v0-no-op-code-block-prefix][
   {
     "title": "Secure API Gateway",
