@@ -7,6 +7,7 @@ export interface Skill {
 export interface Certification {
   name: string
   icon: string
+  date: string
 }
 
 export interface SkillsData {

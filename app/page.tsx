@@ -382,7 +382,7 @@ export default function Portfolio() {
                         />
                         <div className="flex-1">
                           <h4 className="font-medium text-gray-900 dark:text-white">{cert.name}</h4>
-                          <span className="text-sm font-medium text-green-600 dark:text-green-400">Certified</span>
+                          <span className="text-sm font-medium text-blue-600 dark:text-blue-400">{cert.date}</span>
                         </div>
                         <span className="text-2xl text-green-600 dark:text-green-400">✓</span>
                       </CardContent>
