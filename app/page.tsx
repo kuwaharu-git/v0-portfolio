@@ -22,14 +22,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import {
-  getSkillsData,
-  getProjectsData,
-  getCareerData,
-  type SkillsData,
-  type Project,
-  type CareerItem,
-} from "@/lib/data"
+import { getPortfolioData, type SkillsData, type Project, type CareerItem } from "@/lib/data"
 
 const IconComponent = ({ iconName, className = "w-6 h-6" }: { iconName: string; className?: string }) => {
   const icons: { [key: string]: any } = {
@@ -51,17 +44,18 @@ export default function Portfolio() {
   const [projectsData, setProjectsData] = useState<Project[]>([])
   const [careerData, setCareerData] = useState<CareerItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [skills, projects, career] = await Promise.all([getSkillsData(), getProjectsData(), getCareerData()])
-
-        setSkillsData(skills)
-        setProjectsData(projects)
-        setCareerData(career)
+        const data = await getPortfolioData()
+        setSkillsData(data.skills)
+        setProjectsData(data.projects)
+        setCareerData(data.career)
       } catch (error) {
         console.error("Error loading data:", error)
+        setError("Failed to load portfolio data")
       } finally {
         setLoading(false)
       }
@@ -88,6 +82,17 @@ export default function Portfolio() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900 dark:border-white"></div>
           <p className="mt-4 text-gray-600 dark:text-gray-300">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 dark:text-red-400 text-xl mb-4">{error}</p>
+          <Button onClick={() => window.location.reload()}>Retry</Button>
         </div>
       </div>
     )
