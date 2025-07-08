@@ -37,10 +37,10 @@ export function ProjectDetailDialog({ project, open, onOpenChange }: ProjectDeta
           if (!response.ok) {
             throw new Error("Failed to fetch project details")
           }
-          return response.json()
+          return response.text()
         })
-        .then((data) => {
-          setContent(parseMarkdown(data.content))
+        .then((markdown) => {
+          setContent(parseMarkdown(markdown))
         })
         .catch((err) => {
           console.error("Error fetching project details:", err)
