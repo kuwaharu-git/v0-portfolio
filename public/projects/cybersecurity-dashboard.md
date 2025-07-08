@@ -1,4 +1,10 @@
-[
+# Cybersecurity Dashboard
+（中身は既存と同じ）
+\`\`\`
+
+2. ──【プロジェクト JSON のパスを更新】───────────────
+```typescriptreact file="data/projects.json"
+[v0-no-op-code-block-prefix][
   {
     "title": "Secure API Gateway",
     "description": "A robust API gateway built with FastAPI featuring JWT authentication, rate limiting, and comprehensive logging for enterprise applications.",

@@ -32,9 +32,7 @@ export function ProjectDetailDialog({ project, open, onOpenChange }: ProjectDeta
       setLoading(true)
       setError(null)
 
-      const slug = project.detailFile.replace(".md", "")
-
-      fetch(`/api/project/${slug}`)
+      fetch(`/${project.detailFile}`)
         .then((response) => {
           if (!response.ok) {
             throw new Error("Failed to fetch project details")
@@ -46,7 +44,7 @@ export function ProjectDetailDialog({ project, open, onOpenChange }: ProjectDeta
         })
         .catch((err) => {
           console.error("Error fetching project details:", err)
-          setError("プロジェクトの詳細を読み込めませんでした。")
+          setError("プロジェクト詳細の読み込みに失敗しました。")
         })
         .finally(() => {
           setLoading(false)
