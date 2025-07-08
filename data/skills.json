@@ -1,0 +1,20 @@
+{
+  "languages": [
+    { "name": "Python", "icon": "Code" },
+    { "name": "JavaScript", "icon": "Code" },
+    { "name": "TypeScript", "icon": "Code" },
+    { "name": "SQL", "icon": "Database" },
+    { "name": "Bash", "icon": "Code" }
+  ],
+  "frameworks": [
+    { "name": "FastAPI", "icon": "Code" },
+    { "name": "Next.js", "icon": "Code" },
+    { "name": "React", "icon": "Code" },
+    { "name": "Node.js", "icon": "Code" },
+    { "name": "Django", "icon": "Code" }
+  ],
+  "certifications": [
+    { "name": "Applied Information Technology Engineer (AP)", "icon": "Award" },
+    { "name": "Registered Information Security Specialist (SC)", "icon": "Shield" }
+  ]
+}
