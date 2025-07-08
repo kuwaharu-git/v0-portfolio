@@ -1,11 +1,5 @@
 export function parseMarkdown(markdown: string): string {
-  console.log("=== Markdown Parser Debug ===")
-  console.log("Input markdown length:", markdown?.length || 0)
-  console.log("Input markdown type:", typeof markdown)
-  console.log("Input markdown preview:", markdown?.substring(0, 100) || "undefined/null")
-
   if (!markdown || typeof markdown !== "string" || markdown.trim() === "") {
-    console.log("Markdown is empty or invalid")
     return '<p class="text-gray-500 dark:text-gray-400">コンテンツが見つかりませんでした。</p>'
   }
 
@@ -18,10 +12,7 @@ export function parseMarkdown(markdown: string): string {
       .replace(/\r/g, "\n") // Mac改行コードを統一
       .trim()
 
-    console.log("Cleaned markdown length:", cleanMarkdown.length)
-
     if (!cleanMarkdown) {
-      console.log("Cleaned markdown is empty")
       return '<p class="text-gray-500 dark:text-gray-400">コンテンツが空です。</p>'
     }
 
@@ -74,17 +65,12 @@ export function parseMarkdown(markdown: string): string {
       .filter(Boolean) // 空の要素を除去
       .join("")
 
-    console.log("Generated HTML length:", html.length)
-    console.log("Generated HTML preview:", html.substring(0, 200))
-
     if (!html || html.trim() === "") {
-      console.log("Generated HTML is empty")
       return '<p class="text-yellow-600 dark:text-yellow-400">マークダウンの変換に失敗しました。</p>'
     }
 
     return html
   } catch (error) {
-    console.error("Error parsing markdown:", error)
     return `<p class="text-red-600 dark:text-red-400">マークダウンの解析中にエラーが発生しました: ${error instanceof Error ? error.message : "Unknown error"}</p>`
   }
 }
