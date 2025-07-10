@@ -7,7 +7,7 @@ import {
   Sun,
   Github,
   Twitter,
-  Globe,
+  StickyNote,
   ExternalLink,
   Mail,
   MapPin,
@@ -32,6 +32,7 @@ import { ProjectDetailDialog } from "@/components/project-detail-dialog"
 import { AnimatedBackground } from "@/components/animated-background"
 import { FloatingElements } from "@/components/floating-elements"
 import { ScrollIndicator } from "@/components/scroll-indicator"
+import Image from "next/image"
 
 const IconComponent = ({ iconName, className = "w-6 h-6" }: { iconName: string; className?: string }) => {
   const icons: { [key: string]: any } = {
@@ -95,10 +96,13 @@ export default function Portfolio() {
   // Memoize social links to prevent re-renders
   const socialLinks = useMemo(
     () => [
-      { icon: Github, href: "#" },
-      { icon: Twitter, href: "#" },
-      { icon: Globe, href: "#" },
-      { icon: Mail, href: "#" },
+      { icon: Github, href: "https://github.com/kuwaharu-git" },
+      { icon: Twitter, href: "https://x.com/kuwaharu_it" },
+      { 
+        icon: StickyNote, // Noteのアイコンがlucide-react等に無いため、GlobeやBook, FileText, StickyNote等が代用候補
+        href: "https://note.com/kuwaharu" 
+      },
+      { icon: Mail, href: "mailto:your-email@example.com" },
     ],
     [],
   )
@@ -306,7 +310,7 @@ export default function Portfolio() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
             >
-              Backend & Security Enthusiast
+              student engineer
             </motion.p>
             <motion.div
               className="flex justify-center space-x-6"
@@ -371,7 +375,16 @@ export default function Portfolio() {
                 whileHover={{ scale: 1.05 }}
                 transition={{ duration: 0.3 }}
               >
-                <User className="w-24 h-24 text-white relative z-10" />
+                {/* アイコンを画像に変更 */}
+                <Image
+                  src="/profile.png"
+                  alt="Profile"
+                  width={192}
+                  height={192}
+                  className="w-full h-full object-cover rounded-full"
+                  priority // ページ読み込み時に優先的に読み込む
+                  quality={90} // 画質設定（1-100）
+                />
               </motion.div>
             </motion.div>
             <motion.div
@@ -381,12 +394,11 @@ export default function Portfolio() {
               viewport={{ once: true }}
             >
               <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
-                I'm a student at a 4-year technical college (graduating in 2027), passionate about backend development
-                and cybersecurity. I enjoy building secure and scalable web applications using Python and JavaScript.
+                システムエンジニアになるために色々勉強中の学生です。
+                情報系の4年制の専門学校に通っています。
               </p>
               <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
-                My journey in technology is driven by a deep curiosity about how systems work and how to make them more
-                secure. I'm constantly learning new technologies and applying them to real-world projects.
+                主な得意分野はwebアプリのバックエンド、セキュリティです。普段はPythonをメインに使用して開発をしています。その他AWS, Dockerなどインフラ系やRaspberry piやドローンなどのIoT関連などさまざまなことに興味があります。
               </p>
               <div className="space-y-2">
                 <div className="flex items-center text-gray-600 dark:text-gray-300">
@@ -637,6 +649,7 @@ export default function Portfolio() {
                       ))}
                     </div>
                     <div className="flex space-x-4">
+                      {project.githubUrl != "" &&
                       <motion.a
                         href={project.githubUrl}
                         onClick={(e) => e.stopPropagation()}
@@ -647,6 +660,8 @@ export default function Portfolio() {
                         <Github className="w-4 h-4 mr-1" />
                         Code
                       </motion.a>
+                      }
+                      {project.liveUrl != "" && 
                       <motion.a
                         href={project.liveUrl}
                         onClick={(e) => e.stopPropagation()}
@@ -657,6 +672,8 @@ export default function Portfolio() {
                         <ExternalLink className="w-4 h-4 mr-1" />
                         Live Demo
                       </motion.a>
+                      }
+
                     </div>
                   </CardContent>
                 </Card>
