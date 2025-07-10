@@ -148,18 +148,22 @@ export function ProjectDetailDialog({ project, open, onOpenChange }: ProjectDeta
 
           {/* アクションボタン */}
           <div className="flex space-x-4">
+            {project.githubUrl != "" &&
             <Button variant="outline" asChild>
               <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
                 <Github className="w-4 h-4 mr-2" />
                 GitHub
               </a>
             </Button>
+            }
+            {project.liveUrl != "" &&
             <Button variant="outline" asChild>
               <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
                 <ExternalLink className="w-4 h-4 mr-2" />
                 Live Demo
               </a>
             </Button>
+            }
             {(error || (!loading && !content && project.detailFile)) && (
               <Button variant="outline" onClick={handleRetry} disabled={loading}>
                 <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />

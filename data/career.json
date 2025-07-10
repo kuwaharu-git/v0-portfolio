@@ -1,22 +1,62 @@
 [
   {
-    "date": "March 2027",
-    "title": "Expected Graduation",
-    "description": "Graduating from a 4-year technical college, majoring in Information Technology with focus on cybersecurity and backend development."
+    "date": "2022-11",
+    "title": "初めてJavaScriptを触る",
+    "description": "これが最初のプログラミングでした、書籍、YouTube等で学習を始めました。"
   },
   {
-    "date": "October 2024",
-    "title": "Registered Information Security Specialist (SC)",
-    "description": "Passed the national certification for cybersecurity, demonstrating expertise in information security management and risk assessment."
+    "date": "2023-3",
+    "title": "ITパスポート合格",
+    "description": "参考書を読んで独学で合格。"
   },
   {
-    "date": "April 2024",
-    "title": "Applied Information Technology Engineer (AP)",
-    "description": "Achieved national certification in applied information technology, covering system design and project management."
+    "date": "2023-4",
+    "title": "専門学校に入学",
+    "description": "4年制の専門学校に入学、Python, SQLなどを学習。"
   },
   {
-    "date": "April 2023",
-    "title": "Started Technical College",
-    "description": "Began studies in Information Technology, focusing on software development and cybersecurity fundamentals."
+    "date": "2023-6",
+    "title": "paiza Bランク獲得",
+    "description": "paizaのスキルチェックで初めてBランクの問題に正解。"
+  },
+  {
+    "date": "2023-11",
+    "title": "noteで初めての記事執筆",
+    "description": "noteで記事の執筆を始めました。備忘録やイベントレポートを書いています。"
+  },
+  {
+    "date": "2023-12",
+    "title": "基本情報技術者試験合格",
+    "description": "2023年11月に受験し合格"
+  },
+    {
+    "date": "2024-4",
+    "title": "ドロカツ全国大会 自律飛行スキルクラス優勝",
+    "description": "大阪のあべのハルカスで行われたドローンを使用した競技で優勝。"
+  },
+    {
+    "date": "2024-5",
+    "title": "paiza Aランク獲得",
+    "description": "paizaのスキルチェックで初めてAランクの問題に正解。"
+  },
+  {
+    "date": "2024-7",
+    "title": "応用情報技術者試験合格",
+    "description": "2024年4月に受験し合格"
+  },
+    {
+    "date": "2024-9",
+    "title": "自動運転AIチャレンジ予選敗退",
+    "description": "自動運転AIチャレンジ 2024大会に参加しましたが、決勝に進むことはできませんでした。"
+  },
+  {
+    "date": "2024-12",
+    "title": "情報処理安全確保支援士試験合格",
+    "description": "2024年12月に受験し合格"
+  },
+  {
+    "date": "2024-12",
+    "title": "情報処理安全確保支援士試験合格",
+    "description": "2024年12月に受験し合格"
   }
 ]
