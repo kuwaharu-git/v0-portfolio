@@ -1,28 +1,35 @@
 {
   "languages": [
-    { "name": "Python", "icon": "Code", "level": 85 },
-    { "name": "JavaScript", "icon": "Code", "level": 80 },
-    { "name": "TypeScript", "icon": "Code", "level": 75 },
-    { "name": "SQL", "icon": "Database", "level": 70 },
-    { "name": "Bash", "icon": "Code", "level": 65 }
+    { "name": "Python", "icon": "Code", "level": 70 },
+    { "name": "JavaScript", "icon": "Code", "level": 50 },
+    { "name": "TypeScript", "icon": "Code", "level": 40 },
+    { "name": "HTML", "icon": "Code", "level": 70 },
+    { "name": "CSS", "icon": "Code", "level": 30 },
+    { "name": "PHP", "icon": "Code", "level": 30 },
+    { "name": "SQL", "icon": "Database", "level": 70 }
+    
   ],
   "frameworks": [
-    { "name": "FastAPI", "icon": "Code", "level": 80 },
-    { "name": "Next.js", "icon": "Code", "level": 75 },
-    { "name": "React", "icon": "Code", "level": 70 },
-    { "name": "Node.js", "icon": "Code", "level": 65 },
-    { "name": "Django", "icon": "Code", "level": 60 }
+    { "name": "FastAPI", "icon": "Code", "level": 70 },
+    { "name": "Flask", "icon": "Code", "level": 70 },
+    { "name": "Django", "icon": "Code", "level": 50 },
+    { "name": "Next.js", "icon": "Code", "level": 50 },
+    { "name": "React", "icon": "Code", "level": 60 }
   ],
   "tools": [
-    { "name": "Docker", "icon": "Code", "level": 75 },
-    { "name": "AWS", "icon": "Database", "level": 60 },
+    { "name": "Docker", "icon": "Code", "level": 60 },
+    { "name": "AWS", "icon": "Cloud", "level": 40 },
+    { "name": "Linux", "icon": "Code", "level": 85 },
     { "name": "Ubuntu", "icon": "Code", "level": 85 },
-    { "name": "Raspberry Pi", "icon": "Code", "level": 70 },
+    { "name": "Raspberry Pi", "icon": "Code", "level": 60 },
     { "name": "Git", "icon": "Code", "level": 80 },
-    { "name": "Linux", "icon": "Code", "level": 85 }
+    { "name": "MySQL", "icon": "Database", "level": 60 }
+
   ],
   "certifications": [
-    { "name": "Applied Information Technology Engineer (AP)", "icon": "Award", "date": "April 2024" },
-    { "name": "Registered Information Security Specialist (SC)", "icon": "Shield", "date": "October 2024" }
+    { "name": "ITパスポート", "icon": "Award", "date": "2023年3月" },
+    { "name": "基本情報技術者試験(FE)", "icon": "Award", "date": "2023年12月" },
+    { "name": "応用情報技術者試験(AP)", "icon": "Award", "date": "2024年7月" },
+    { "name": "情報処理安全確保支援士試験(SC)", "icon": "Shield", "date": "2024年12月" }
   ]
 }
