@@ -102,7 +102,7 @@ export default function Portfolio() {
         icon: StickyNote, // Noteのアイコンがlucide-react等に無いため、GlobeやBook, FileText, StickyNote等が代用候補
         href: "https://note.com/kuwaharu" 
       },
-      { icon: Mail, href: "mailto:your-email@example.com" },
+      { icon: Mail, href: "mailto:contact@kuwaharu.com" },
     ],
     [],
   )
