@@ -624,59 +624,61 @@ export default function Portfolio() {
           >
             {projectsData.map((project, index) => (
               <motion.div key={index} variants={fadeInUp}>
-                <Card
+                <motion.div
+                  whileHover={{ y: -5 }}
                   className="hover:shadow-xl transition-all duration-300 cursor-pointer group border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm overflow-hidden"
                   onClick={() => {
                     setSelectedProject(project)
                     setDialogOpen(true)
                   }}
-                  whileHover={{ y: -5 }}
                 >
-                  <CardHeader className="relative z-10">
-                    <CardTitle className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                      {project.title}
-                    </CardTitle>
-                    <CardDescription className="text-gray-600 dark:text-gray-300">
-                      {project.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="relative z-10">
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {project.tags.map((tag, tagIndex) => (
-                        <Badge key={tagIndex} variant="secondary" className="text-xs">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                    <div className="flex space-x-4">
-                      {project.githubUrl != "" &&
-                      <motion.a
-                        href={project.githubUrl}
-                        onClick={(e) => e.stopPropagation()}
-                        className="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <Github className="w-4 h-4 mr-1" />
-                        Code
-                      </motion.a>
-                      }
-                      {project.liveUrl != "" && 
-                      <motion.a
-                        href={project.liveUrl}
-                        onClick={(e) => e.stopPropagation()}
-                        className="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <ExternalLink className="w-4 h-4 mr-1" />
-                        Live Demo
-                      </motion.a>
-                      }
+                  <Card>
+                    <CardHeader className="relative z-10">
+                      <CardTitle className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        {project.title}
+                      </CardTitle>
+                      <CardDescription className="text-gray-600 dark:text-gray-300">
+                        {project.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="relative z-10">
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {project.tags.map((tag, tagIndex) => (
+                          <Badge key={tagIndex} variant="secondary" className="text-xs">
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                      <div className="flex space-x-4">
+                        {project.githubUrl != "" &&
+                        <motion.a
+                          href={project.githubUrl}
+                          onClick={(e) => e.stopPropagation()}
+                          className="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <Github className="w-4 h-4 mr-1" />
+                          Code
+                        </motion.a>
+                        }
+                        {project.liveUrl != "" && 
+                        <motion.a
+                          href={project.liveUrl}
+                          onClick={(e) => e.stopPropagation()}
+                          className="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <ExternalLink className="w-4 h-4 mr-1" />
+                          Live Demo
+                        </motion.a>
+                        }
 
-                    </div>
-                  </CardContent>
-                </Card>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
               </motion.div>
             ))}
           </motion.div>
