@@ -56,7 +56,7 @@
 
 プロジェクトは以下のURLで公開されています：
 
-**[https://www.kuwaharu.com)**
+**https://www.kuwaharu.com**
 
 ## 継続開発
 
