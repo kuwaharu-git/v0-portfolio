@@ -772,7 +772,7 @@ export default function Portfolio() {
             ))}
           </motion.div>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            © 2024 kuwaharu. Built with React and Tailwind CSS.
+            © 2025 kuwaharu. Built with React and Tailwind CSS.
           </p>
         </div>
       </motion.footer>
