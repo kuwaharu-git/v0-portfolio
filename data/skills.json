@@ -23,7 +23,10 @@
     { "name": "Ubuntu", "icon": "Code", "level": 85 },
     { "name": "Raspberry Pi", "icon": "Code", "level": 60 },
     { "name": "Git", "icon": "Code", "level": 80 },
-    { "name": "MySQL", "icon": "Database", "level": 60 }
+    { "name": "MySQL", "icon": "Database", "level": 60 },
+    { "name": "GitHub Copilot", "icon": "Code", "level": 50 },
+    { "name": "Dify", "icon": "Code", "level": 50 }
+    
 
   ],
   "certifications": [

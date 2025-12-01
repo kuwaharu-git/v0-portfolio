@@ -14,5 +14,21 @@
     "githubUrl": "https://github.com/kuwaharu-git/date-countdown-bot",
     "liveUrl": "",
     "detailFile": "projects/date-countdown-bot.md"
+  },
+  {
+  "title": "LiveFx",
+  "description": "入学式の在校生プレゼンテーションで使用したライブインタラクションシステム。",
+  "tags": ["TypeScript", "React", "Docker", "AWS"],
+  "githubUrl": "",
+  "liveUrl": "",
+  "detailFile": "projects/livefx.md"
+  },
+  {
+  "title": "学内向けWebアプリ",
+  "description": "学生のプロフィールと、学生が作った制作物を学生同士でレビューができるwebアプリケーション",
+  "tags": ["Next.js", "Django", "MySQL", "Docker"],
+  "githubUrl": "https://github.com/kuwaharu-git/school-app",
+  "liveUrl": "https://school.kuwaharu.com",
+  "detailFile": "projects/school-app.md"
   }
 ]

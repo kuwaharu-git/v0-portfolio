@@ -1,5 +1,3 @@
-# Cybersecurity Dashboard
-
 ## 概要
 Discord上で指定したイベントのカウントダウンを管理・通知するBot
 
