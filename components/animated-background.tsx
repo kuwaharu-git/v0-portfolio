@@ -71,7 +71,7 @@ export function AnimatedBackground() {
           }}
           animate={{
             y: [0, -80, 0],
-            opacity: [0, 0.8, 0],
+            opacity: [0, 0.4, 0],
           }}
           transition={{
             duration: 12 + Math.random() * 6,
