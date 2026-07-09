@@ -19,8 +19,8 @@
   "title": "LiveFx",
   "description": "入学式の在校生プレゼンテーションで使用したライブインタラクションシステム。",
   "tags": ["TypeScript", "React", "Docker", "AWS"],
-  "githubUrl": "",
-  "liveUrl": "",
+  "githubUrl": "https://github.com/SIWLiveFX/livefx-public",
+  "liveUrl": "https://livefx.siw.ac.jp/",
   "detailFile": "projects/livefx.md"
   },
   {
