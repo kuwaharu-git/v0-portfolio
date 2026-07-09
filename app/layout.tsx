@@ -1,5 +1,10 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import './globals.css'
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+}
 
 export const metadata: Metadata = {
   title: 'Kuwaharu\'s Portfolio',
@@ -7,7 +12,6 @@ export const metadata: Metadata = {
   generator: 'v0.dev',
   authors: [{ name: 'Kuwaharu' }],
   keywords: ['portfolio', 'web developer', 'projects', 'Kuwaharu', 'システムエンジニア', '学生'],
-  viewport: 'width=device-width, initial-scale=1.0',
   openGraph: {
     title: 'Kuwaharu\'s Portfolio',
     description: 'システムエンジニアを目指す学生のポートフォリオ',
@@ -38,7 +42,15 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="ja">
+    <html lang="ja" suppressHydrationWarning>
+      <head>
+        {/* hydration前にテーマを適用してダークモードのちらつきを防ぐ */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem("theme");if(t==="dark"||(!t&&window.matchMedia("(prefers-color-scheme: dark)").matches)){document.documentElement.classList.add("dark")}}catch(e){}})()`,
+          }}
+        />
+      </head>
       <body>{children}</body>
     </html>
   )

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useMemo } from "react"
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence, MotionConfig } from "framer-motion"
 import {
   Moon,
   Sun,
@@ -66,15 +66,15 @@ const getSkillLevelColor = (level: number): string => {
 
 // Optimized animation variants
 const fadeInUp = {
-  initial: { opacity: 0, y: 30 },
+  initial: { opacity: 0, y: 16 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.4, ease: "easeOut" },
+  transition: { duration: 0.3, ease: "easeOut" },
 }
 
 const staggerContainer = {
   animate: {
     transition: {
-      staggerChildren: 0.08,
+      staggerChildren: 0.05,
     },
   },
 }
@@ -89,20 +89,19 @@ export default function Portfolio() {
   const [error, setError] = useState<string | null>(null)
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
-
-  const { scrollYProgress } = useScroll()
-  const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "50%"])
+  const [activeSection, setActiveSection] = useState("")
 
   // Memoize social links to prevent re-renders
   const socialLinks = useMemo(
     () => [
-      { icon: Github, href: "https://github.com/kuwaharu-git" },
-      { icon: Twitter, href: "https://x.com/kuwaharu_it" },
-      { 
+      { icon: Github, href: "https://github.com/kuwaharu-git", label: "GitHub" },
+      { icon: Twitter, href: "https://x.com/kuwaharu_it", label: "X (Twitter)" },
+      {
         icon: StickyNote, // Noteのアイコンがlucide-react等に無いため、GlobeやBook, FileText, StickyNote等が代用候補
-        href: "https://note.com/kuwaharu" 
+        href: "https://note.com/kuwaharu",
+        label: "note",
       },
-      { icon: Mail, href: "mailto:contact@kuwaharu.com" },
+      { icon: Mail, href: "mailto:contact@kuwaharu.com", label: "メールを送る" },
     ],
     [],
   )
@@ -127,17 +126,55 @@ export default function Portfolio() {
     loadData()
   }, [])
 
+  // layout.tsxのインラインスクリプトが適用したテーマとstateを同期する
   useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add("dark")
-    } else {
-      document.documentElement.classList.remove("dark")
-    }
-  }, [darkMode])
+    setDarkMode(document.documentElement.classList.contains("dark"))
+  }, [])
 
   const toggleDarkMode = () => {
-    setDarkMode(!darkMode)
+    setDarkMode((prev) => {
+      const next = !prev
+      document.documentElement.classList.toggle("dark", next)
+      try {
+        localStorage.setItem("theme", next ? "dark" : "light")
+      } catch {}
+      return next
+    })
   }
+
+  // スクロール位置に応じてナビの現在地をハイライトする
+  useEffect(() => {
+    if (loading) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id)
+          }
+        })
+      },
+      { rootMargin: "-40% 0px -55% 0px" },
+    )
+
+    navItems.forEach((item) => {
+      const el = document.getElementById(item.toLowerCase())
+      if (el) observer.observe(el)
+    })
+
+    return () => observer.disconnect()
+  }, [loading, navItems])
+
+  // モバイルメニューをEscapeキーで閉じられるようにする
+  useEffect(() => {
+    if (!mobileMenuOpen) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileMenuOpen(false)
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [mobileMenuOpen])
 
   if (loading) {
     return (
@@ -172,6 +209,7 @@ export default function Portfolio() {
   }
 
   return (
+    <MotionConfig reducedMotion="user">
     <div className="min-h-screen relative overflow-hidden">
       <AnimatedBackground />
       <FloatingElements />
@@ -186,13 +224,15 @@ export default function Portfolio() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <motion.div
-              className="font-bold text-xl text-gray-900 dark:text-white"
+            <motion.a
+              href="#"
+              aria-label="ページの先頭へ戻る"
+              className="font-bold text-xl text-gray-900 dark:text-white rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
               kuwaharu
-            </motion.div>
+            </motion.a>
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-6">
@@ -200,13 +240,25 @@ export default function Portfolio() {
                 <motion.a
                   key={item}
                   href={`#${item.toLowerCase()}`}
-                  className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors relative"
+                  aria-current={activeSection === item.toLowerCase() ? "true" : undefined}
+                  className={`transition-colors relative rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+                    activeSection === item.toLowerCase()
+                      ? "text-gray-900 dark:text-white font-medium"
+                      : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+                  }`}
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                   whileHover={{ y: -2 }}
                 >
                   {item}
+                  {activeSection === item.toLowerCase() && (
+                    <motion.span
+                      layoutId="nav-active-indicator"
+                      className="absolute -bottom-1.5 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"
+                      transition={{ duration: 0.25 }}
+                    />
+                  )}
                 </motion.a>
               ))}
               <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
@@ -214,6 +266,7 @@ export default function Portfolio() {
                   variant="ghost"
                   size="icon"
                   onClick={toggleDarkMode}
+                  aria-label={darkMode ? "ライトモードに切り替え" : "ダークモードに切り替え"}
                   className="text-gray-600 dark:text-gray-300"
                 >
                   <AnimatePresence mode="wait">
@@ -245,13 +298,21 @@ export default function Portfolio() {
 
             {/* Mobile Navigation */}
             <div className="md:hidden flex items-center space-x-2">
-              <Button variant="ghost" size="icon" onClick={toggleDarkMode} className="text-gray-600 dark:text-gray-300">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleDarkMode}
+                aria-label={darkMode ? "ライトモードに切り替え" : "ダークモードに切り替え"}
+                className="text-gray-600 dark:text-gray-300"
+              >
                 {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
               </Button>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                aria-label={mobileMenuOpen ? "メニューを閉じる" : "メニューを開く"}
+                aria-expanded={mobileMenuOpen}
                 className="text-gray-600 dark:text-gray-300"
               >
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -275,7 +336,12 @@ export default function Portfolio() {
                       key={item}
                       href={`#${item.toLowerCase()}`}
                       onClick={() => setMobileMenuOpen(false)}
-                      className="block px-3 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                      aria-current={activeSection === item.toLowerCase() ? "true" : undefined}
+                      className={`block px-3 py-2 rounded-md transition-colors ${
+                        activeSection === item.toLowerCase()
+                          ? "text-gray-900 dark:text-white font-medium bg-gray-100 dark:bg-gray-800"
+                          : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+                      }`}
                     >
                       {item}
                     </a>
@@ -289,26 +355,26 @@ export default function Portfolio() {
 
       {/* Hero Section */}
       <section className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 relative">
-        <motion.div className="max-w-7xl mx-auto text-center z-10" style={{ y: backgroundY }}>
+        <div className="max-w-7xl mx-auto text-center z-10">
           <motion.div
             className="mb-8"
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
           >
             <motion.h1
               className="text-5xl md:text-7xl font-bold text-gray-900 dark:text-white mb-4"
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
             >
               kuwaharu
             </motion.h1>
             <motion.p
               className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
+              transition={{ duration: 0.4, delay: 0.2 }}
             >
               student engineer
             </motion.p>
@@ -322,7 +388,10 @@ export default function Portfolio() {
                 <motion.a
                   key={index}
                   href={social.href}
-                  className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                  aria-label={social.label}
+                  target={social.href.startsWith("http") ? "_blank" : undefined}
+                  rel={social.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                  className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                   variants={fadeInUp}
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
@@ -332,15 +401,17 @@ export default function Portfolio() {
               ))}
             </motion.div>
           </motion.div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+        <motion.a
+          href="#about"
+          aria-label="About セクションへスクロール"
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
         >
-          <ChevronDown className="w-6 h-6 text-gray-400" />
-        </motion.div>
+          <ChevronDown className="w-6 h-6" />
+        </motion.a>
       </section>
 
       {/* About Me Section */}
@@ -378,7 +449,7 @@ export default function Portfolio() {
                 {/* アイコンを画像に変更 */}
                 <Image
                   src="/profile.png"
-                  alt="Profile"
+                  alt="kuwaharuのプロフィール画像"
                   width={192}
                   height={192}
                   className="w-full h-full object-cover rounded-full"
@@ -481,7 +552,7 @@ export default function Portfolio() {
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.1 }}
+                transition={{ duration: 0.4 }}
                 viewport={{ once: true }}
               >
                 <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Frameworks & Libraries</h3>
@@ -521,7 +592,7 @@ export default function Portfolio() {
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.2 }}
+                transition={{ duration: 0.4 }}
                 viewport={{ once: true }}
               >
                 <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Tools & Technologies</h3>
@@ -561,7 +632,7 @@ export default function Portfolio() {
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.3 }}
+                transition={{ duration: 0.4 }}
                 viewport={{ once: true }}
               >
                 <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Certifications</h3>
@@ -623,16 +694,26 @@ export default function Portfolio() {
             viewport={{ once: true }}
           >
             {projectsData.map((project, index) => (
-              <motion.div key={index} variants={fadeInUp}>
+              <motion.div key={index} variants={fadeInUp} className="h-full">
                 <motion.div
                   whileHover={{ y: -5 }}
-                  className="hover:shadow-xl transition-all duration-300 cursor-pointer group border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm overflow-hidden"
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`${project.title}の詳細を見る`}
+                  className="h-full hover:shadow-xl transition-all duration-300 cursor-pointer group border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm overflow-hidden rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                   onClick={() => {
                     setSelectedProject(project)
                     setDialogOpen(true)
                   }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault()
+                      setSelectedProject(project)
+                      setDialogOpen(true)
+                    }
+                  }}
                 >
-                  <Card>
+                  <Card className="h-full">
                     <CardHeader className="relative z-10">
                       <CardTitle className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                         {project.title}
@@ -653,8 +734,12 @@ export default function Portfolio() {
                         {project.githubUrl != "" &&
                         <motion.a
                           href={project.githubUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`${project.title}のソースコードをGitHubで見る`}
                           onClick={(e) => e.stopPropagation()}
-                          className="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                          onKeyDown={(e) => e.stopPropagation()}
+                          className="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                         >
@@ -662,11 +747,15 @@ export default function Portfolio() {
                           Code
                         </motion.a>
                         }
-                        {project.liveUrl != "" && 
+                        {project.liveUrl != "" &&
                         <motion.a
                           href={project.liveUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`${project.title}のデモサイトを開く`}
                           onClick={(e) => e.stopPropagation()}
-                          className="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                          onKeyDown={(e) => e.stopPropagation()}
+                          className="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                         >
@@ -712,9 +801,9 @@ export default function Portfolio() {
               <motion.div
                 key={index}
                 className={`relative flex items-center mb-8 ${index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"}`}
-                initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
+                initial={{ opacity: 0, x: index % 2 === 0 ? -24 : 24 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.1 }}
+                transition={{ duration: 0.35 }}
                 viewport={{ once: true }}
               >
                 {/* Timeline dot */}
@@ -762,7 +851,10 @@ export default function Portfolio() {
               <motion.a
                 key={index}
                 href={social.href}
-                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                aria-label={social.label}
+                target={social.href.startsWith("http") ? "_blank" : undefined}
+                rel={social.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                 variants={fadeInUp}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
@@ -780,5 +872,6 @@ export default function Portfolio() {
       {/* Project Detail Dialog */}
       <ProjectDetailDialog project={selectedProject} open={dialogOpen} onOpenChange={setDialogOpen} />
     </div>
+    </MotionConfig>
   )
 }
