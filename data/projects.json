@@ -30,5 +30,13 @@
   "githubUrl": "https://github.com/kuwaharu-git/school-app",
   "liveUrl": "https://school.kuwaharu.com",
   "detailFile": "projects/school-app.md"
+  },
+  {
+  "title": "QHand",
+  "description": "QRと暗号化技術を活用したその場で安全な情報のやり取りができるwebアプリケーション",
+  "tags": ["TypeScript", "Hono", "React", "Cloudflare Workers"],
+  "githubUrl": "https://github.com/kuwaharu-git/Qhand",
+  "liveUrl": "https://qhand.pages.dev/",
+  "detailFile": "projects/qhand.md"
   }
 ]
