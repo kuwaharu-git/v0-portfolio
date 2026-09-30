@@ -6,7 +6,8 @@
     { "name": "HTML", "icon": "Code", "level": 70 },
     { "name": "CSS", "icon": "Code", "level": 30 },
     { "name": "PHP", "icon": "Code", "level": 30 },
-    { "name": "SQL", "icon": "Database", "level": 70 }
+    { "name": "SQL", "icon": "Database", "level": 70 },
+    { "name": "Go", "icon": "Code", "level": 30 }
     
   ],
   "frameworks": [
